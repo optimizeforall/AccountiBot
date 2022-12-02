@@ -19,5 +19,6 @@ def testGoal():
     goal.showPlot()
     goal.savePlot('./Media/plot.png')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     testGoal()
