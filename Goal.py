@@ -32,7 +32,7 @@ class Goal:
             log.error(f'{entryDateStr} is outside of goal range: ({startDateStr}) - ({endDateStr})')
             return
         else:
-            log.info(f'Adding {hours} hours for day {dayInGoal} / {self.goalDuration}.')
+            log.info(f'Adding {hours} hours for day {dayInGoal} / {self.goalDuration} for {self.goalTitle}.')
             self.timeWorked.append((time, hours)) # This isn't necessary, but I want to keep track of all entries for now
             self.totalHoursWorked += hours
             # Determine if goal is complete
@@ -50,11 +50,11 @@ class Goal:
         If you need help regarding using this bot, type !gh
         """
 
-        message = f'Your goal, {self.goalTitle}, will last {self.goalDuration} days, and require {self.hourGoal} hours of recorded work.\n'
-        message += f'It begins now, and ends {self.endDate.strftime("%a %B %dth, %Y at %I:%M %p")}.\n'
-        message += f'This requires an average of {self.hoursPerDay}hrs of work / day with {self.daysOff} days off.\n'
-        message += f'If you fall behind in tracking, I\'ll get on you case. Good luck!\n'
-        message += f'If you need help regarding using this bot, type !gh'
+        message = f'Your goal, *{self.goalTitle}*, will last **{self.goalDuration} days, and require {self.hourGoal} hours of recorded work**.\n'
+        message += f'It begins now, and ends ***{self.endDate.strftime("%a %B %dth, %Y at %I:%M %p")}*** UTC.\n'
+        message += f'This requires an average of **{self.hoursPerDay}hrs of work / day** with {self.daysOff} days off.\n'
+        message += f'If you fall behind in tracking, *I\'ll get on you case. 💪* Good luck!\n'
+        message += f'\nIf you need help regarding using this bot, type !gh'
 
         return message
 

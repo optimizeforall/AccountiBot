@@ -1,7 +1,7 @@
 from Goal import Goal
 import datetime
 import random 
-
+import DiscordBot as bot
 
 def testGoal():
 
@@ -22,4 +22,4 @@ def testGoal():
 
 
 if __name__ == '__main__':
-    testGoal()
+    bot.runBot()
