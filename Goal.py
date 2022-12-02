@@ -1,5 +1,4 @@
 import datetime
-import io
 import random 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -49,6 +48,11 @@ class Goal:
         else:
             log.info(f'Adding {hours} hours for day {dayInGoal} / {self.goalDuration}.')
             self.timeWorked.append((time, hours)) # This isn't necessary, but I want to keep track of all entries for now
+            self.totalHoursWorked += hours
+            # Determine if goal is complete
+            if self.succeeded == False and self.totalHoursWorked >= self.hourGoal:
+                self.succeeded = True
+                log.info(f'Goal {self.goalTitle} succeeded!')
 
     def getInitMessage(self):
         """
@@ -72,9 +76,9 @@ class Goal:
         self.createPlot()
         plt.show()
     
-    def savePlot(self):
+    def savePlot(self, name):
         self.createPlot()
-        plt.savefig('plot.png')
+        plt.savefig(name)
         plt.close()
 
     def plotInit(self):
@@ -132,9 +136,10 @@ class Goal:
         log.info(f'Generating plot for {self.goalTitle}')
 
         # Create figure
-        plt.title(f'\'{self.goalTitle}\' Progress Chart', color='grey', pad=10)
+        plt.title(f'{self.goalTitle} Progress Chart', color='grey', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
+
         # Plot data
         plt.plot(x, y, '-o', color='white', markersize=3.5, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
 
@@ -151,7 +156,7 @@ class Goal:
             plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs')
 
         # Legend, set color to grey, set location to upper left... 
-        plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
+        plt.legend(bbox_to_anchor=(.98, 0.02), loc='lower right', prop={'size': 8}, facecolor='black', edgecolor='grey')
         plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
 
 
@@ -160,10 +165,10 @@ def testGoal():
 
     # Add random entries to goal
     for i in range(50):
-        g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(1, 5))
+        g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(.1, 5))
 
     g.showPlot()
-    g.savePlot()
+    g.savePlot('./Media/plot.png')
 
 if __name__ == "__main__":
     testGoal()
