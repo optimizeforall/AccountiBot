@@ -18,8 +18,6 @@ log.addHandler(ch)
 # Disable info logging
 # logging.disable(logging.INFO)
 
-
-
 class Goal:
     def __init__(self, goalDuration: float, hourGoal: float, goalTitle: str, daysOff=0):
         log.info(f'Creating new goal: {goalTitle}')
@@ -71,7 +69,6 @@ class Goal:
 
         return message
 
-    # Return graph of progress, x-axis is goalDuration in days, y-axis hours worked
     def showPlot(self):
         self.createPlot()
         plt.show()
@@ -158,7 +155,6 @@ class Goal:
         # Legend, set color to grey, set location to upper left... 
         plt.legend(bbox_to_anchor=(.98, 0.02), loc='lower right', prop={'size': 8}, facecolor='black', edgecolor='grey')
         plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
-
 
 def testGoal(): 
     g = Goal(30, 90, "Learning Dart")
