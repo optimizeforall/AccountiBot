@@ -16,6 +16,11 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter.CustomFormatter())
 log.addHandler(ch)
 
+# Disable info logging
+# logging.disable(logging.INFO)
+
+
+
 class Goal:
     def __init__(self, goalDuration: float, hourGoal: float, goalTitle: str, daysOff=0):
         log.info(f'Creating new goal: {goalTitle}')
@@ -106,28 +111,23 @@ class Goal:
 
         ax = plt.gca()
         # Set x and y limits, x (days) starts at 1, y (hours)starts at 0
-        ax.set_xlim([self.startDate.timestamp(), self.endDate.timestamp()])
+
+        log.debug(self.endDate.timestamp() - self.startDate.timestamp())
+
+        # Set x_start 1, and x_end to goalDuration
+        ax.set_xlim(1, self.goalDuration)
+
+        # scale x axis to be in days from 1 to goalDuration
+        xx = [((i - self.startDate.timestamp()) / (60*60*24)) + 1 for i in xx]
 
         if yy[-1] > self.hourGoal:
-            ax.set_ylim([0, yy[-1]])
+            ax.set_ylim([0, yy[-1]*1.1])
         else:
-            ax.set_ylim([0, round(self.hourGoal * 1.3, -1)]) # self.hourGoal * 1.3 to give room to see goal line
+            ax.set_ylim([0, round(self.hourGoal * 1.1, -1)]) # self.hourGoal * 1.1 to give room to see goal line
 
 
 
-        plt.plot(xx, yy, '-o', color='white', markersize=4, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
-
-
-
-        # Generate x and y values for graph
-        x = [i for i in range(1, self.goalDuration + 1)]
-        y = [sum(self.timeWorkedPerDay[:i+1]) for i in range(1, self.goalDuration + 1)]
-
-
-        log.debug(f'x: {x}')
-        log.debug(f'y: {y}')
-
-
+        plt.plot(xx, yy, '-o', color='white', markersize=3.5, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
 
         # Create graph
         log.info(f'Create graph for {self.goalTitle}')
@@ -140,16 +140,18 @@ class Goal:
 
         # draw line at goal
         if yy[-1] > self.hourGoal:
-            plt.axhline(y=self.hourGoal, color='g', linestyle='-', label=f'Goal {self.hourGoal}hrs (REACHED + {round(yy[-1] - self.hourGoal, 2)}hrs)')
+            plt.axhline(y=self.hourGoal, color='g', linestyle='-', label=f'Goal {self.hourGoal}hrs (REACHED +{round(yy[-1] - self.hourGoal, 2)}hrs)')
         else:
-            plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs')
+            plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs ({round(self.hourGoal - yy[-1], 2)}hrs left)')
+        
+        # Add line that is halfway to goal
+        if yy[-1] >= self.hourGoal / 2:
+            plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs (REACHED)')
+        else:
+            plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs')
 
-        # Create legend with label goalTitle
+        # Legend
         plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
-        # Add padding to legend 
-
-
-        #make legend text color grey
         plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
         # plt.savefig('plot.png')
         plt.show()
@@ -162,7 +164,7 @@ def testGoal():
     g = Goal(30, 90, "beast_mode")
 
     # Add 15 random entries to goal
-    for i in range(90):
+    for i in range(50):
         g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(1, 5))
 
     g.displayProgressGraph()
