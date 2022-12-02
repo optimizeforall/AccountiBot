@@ -3,8 +3,8 @@
 Accountibot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it. 
 
 ## Functionality 
-```markdown
-# Add new goal 
+
+**Add new goal**
 !g [goal duration] [hours to work] [goal title] ?[rest days]
 
 
@@ -19,7 +19,7 @@ If you fall behind in tracking, I'll get on you case.
 If you need help regarding using this bot, type !gh
 
 
-# Add hours to goal
+**Add hours to goal**
 !ga [goal_title] [time in hours / minutes]
 
 *Examples:*
@@ -28,10 +28,8 @@ If you need help regarding using this bot, type !gh
 !ga beast_mode 23m
 !ga beast_mode 90m
 
-# Show graph of progress
+**Show graph of progress**
 !gg [goal title]
-
-```
 
 ## Graphs 
 
