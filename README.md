@@ -1,6 +1,6 @@
 # AccountiBot 
 
-Accountibot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it. 
+Accountibot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it.
 
 ## Functionality 
 
@@ -17,6 +17,7 @@ This requires an average of 3hrs of work / day with 2 days off.
 If you fall behind in tracking, I'll get on you case. 
 
 If you need help regarding using this bot, type !gh
+
 
 
 **Add hours to goal**
@@ -40,3 +41,6 @@ You can ask AccountiBot for current graph of progress and he will post this.
 
 ### Completed
 ![completed goal](./Media/plot_complete.png)
+
+## Invite this bot to your server
+Invite URL = https://discord.com/api/oauth2/authorize?client_id=1047769932089282590&permissions=536267455568&scope=bot
