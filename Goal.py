@@ -1,9 +1,9 @@
+from numpy import sort 
+from logger import log
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging
-from numpy import sort 
-from logger import log
 
 
 class Goal:
@@ -126,7 +126,7 @@ class Goal:
         plt.ylabel('Hours')
 
         # Plot data
-        plt.plot(x, y, '-o', color='white', markersize=3.5, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
+        plt.plot(x, y, '-o', color='white', markersize=2, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
 
         # Draw goal line at goal, if goal is reached, draw line in green, else draw in red
         if y[-1] > self.hourGoal:
