@@ -33,7 +33,8 @@ class Goal:
         self.daysOff = daysOff
         self.hoursPerDay = hourGoal / (goalDuration - self.daysOff)
         self.timeWorked = [] # list of touples (time of entry, hoursWorked)
-        self.timeWorkedPerDay = [0] * goalDuration # index is day in goal, value is hours worked,
+        self.succeeded = False
+        self.totalHoursWorked = 0
 
     def addHours(self, time: datetime, hours: float):
         dayInGoal = (time - self.startDate).days
@@ -48,7 +49,6 @@ class Goal:
         else:
             log.info(f'Adding {hours} hours for day {dayInGoal} / {self.goalDuration}.')
             self.timeWorked.append((time, hours)) # This isn't necessary, but I want to keep track of all entries for now
-            self.timeWorkedPerDay[dayInGoal] += hours
 
     def getInitMessage(self):
         """
@@ -69,9 +69,13 @@ class Goal:
 
     # Return graph of progress, x-axis is goalDuration in days, y-axis hours worked
     def showPlot(self):
-        self.plotInit()
         self.createPlot()
         plt.show()
+    
+    def savePlot(self):
+        self.createPlot()
+        plt.savefig('plot.png')
+        plt.close()
 
     def plotInit(self):
         mpl.rcParams['lines.linewidth'] = .5
@@ -102,7 +106,8 @@ class Goal:
         mpl.rcParams['ytick.left'] = False
 
     def createPlot(self):
-                
+        self.plotInit()
+ 
         # Curate x and y values
         x = [i[0].timestamp() for i in self.timeWorked]
         y = [i[1] for i in self.timeWorked] # create list of hours worked for each entry
@@ -127,7 +132,7 @@ class Goal:
         log.info(f'Generating plot for {self.goalTitle}')
 
         # Create figure
-        plt.title(f'{self.goalTitle} progress chart', color='grey', pad=10)
+        plt.title(f'\'{self.goalTitle}\' Progress Chart', color='grey', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
         # Plot data
@@ -141,9 +146,9 @@ class Goal:
         
         # Draw half-way line, if halfway is reached, draw line in green, else draw in red
         if y[-1] >= self.hourGoal / 2:
-            plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs (REACHED)')
+            plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs (REACHED)')
         else:
-            plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs')
+            plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs')
 
         # Legend, set color to grey, set location to upper left... 
         plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
@@ -151,13 +156,14 @@ class Goal:
 
 
 def testGoal(): 
-    g = Goal(30, 90, "beast_mode")
+    g = Goal(30, 90, "Learning Dart")
 
     # Add random entries to goal
     for i in range(50):
         g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(1, 5))
 
     g.showPlot()
+    g.savePlot()
 
 if __name__ == "__main__":
     testGoal()
