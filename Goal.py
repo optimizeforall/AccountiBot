@@ -37,6 +37,7 @@ class Goal:
             self.totalHoursWorked += hours
             # Determine if goal is complete
             if self.succeeded == False and self.totalHoursWorked >= self.hourGoal:
+                log.debug(f'Goal completed! Total hours worked: {self.totalHoursWorked}')
                 self.succeeded = True
                 log.info(f'Goal {self.goalTitle} succeeded!')
 
@@ -104,14 +105,15 @@ class Goal:
         x, y = zip(*sorted(zip(x, y)))
         # sum of each index up to current index 
         y = [sum(y[:i+1]) for i in range(len(y))] # e.g. [1, 2, 3, 4] -> [1, 3, 6, 10]
-
+        log.debug(f'Sum of hours worked: {y[-1]}')
         # get current axis
     # #create datetime object for 2 days from now
         axis = plt.gca()
         # Set x axis length
         axis.set_xlim(1, self.goalDuration)
         # Scale x axis to be in days
-        x = [((i - self.startDate.timestamp()) / (60*60*24)) + 1 for i in x]
+        x = [((i - self.startDate.timestamp()) / (60*60*24)) for i in x]
+
         # If largest y value is greater than goal, set y axis to largest y value
         if y[-1] > self.hourGoal: 
             axis.set_ylim([0, y[-1]*1.1])
