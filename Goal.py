@@ -1,3 +1,4 @@
+from matplotlib import figure
 from numpy import sort 
 from logger import log
 import datetime
@@ -126,9 +127,10 @@ class Goal:
         plt.title(f'{self.goalTitle} Progress Chart', color='grey', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
+        plt.gcf().set_size_inches(15, 10)
 
         # Plot data
-        plt.plot(x, y, '-o', color='white', markersize=2, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
+        plt.plot(x, y, '-o', color='grey', markersize=4, markerfacecolor='grey', markeredgecolor='grey', markeredgewidth=2.5)
 
         # Draw goal line at goal, if goal is reached, draw line in green, else draw in red
         if y[-1] > self.hourGoal:
