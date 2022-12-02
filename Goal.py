@@ -1,4 +1,6 @@
-import datetime 
+import datetime
+import io
+import random 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging 
@@ -28,13 +30,13 @@ class Goal:
 
     def addHours(self, time: datetime, hours: float):
         dayInGoal = (time - self.startDate).days
-        startDateStr = self.startDate.strftime('%m/%d/%Y')
-        endDateStr = self.endDate.strftime('%m/%d/%Y')
-        entryDateStr = time.strftime('%m/%d/%Y')
+        startDateStr = self.startDate.strftime('%m/%d/%Y, %H:%M:%S')
+        endDateStr = self.endDate.strftime('%m/%d/%Y, %H:%M:%S')
+        entryDateStr = time.strftime('%m/%d/%Y, %H:%M:%S')
 
         # If dayInGoal outside goal range, print error and return
-        if dayInGoal > self.goalDuration or dayInGoal < 0:
-            log.error(f'{entryDateStr} is outside of goal range: {startDateStr} - {endDateStr}')
+        if dayInGoal >= self.goalDuration or dayInGoal < 0:
+            log.error(f'{entryDateStr} is outside of goal range: ({startDateStr}) - ({endDateStr})')
             return
         else:
             log.info(f'Adding {hours} hours for day {dayInGoal} / {self.goalDuration}.')
@@ -61,7 +63,7 @@ class Goal:
     # Return graph of progress, x-axis is goalDuration in days, y-axis hours worked
     def displayProgressGraph(self):
         mpl.rcParams['lines.linewidth'] = .5
-        # mpl.rcParams['lines.linestyle'] = '-'
+        mpl.rcParams['lines.linestyle'] = '-'
         mpl.rcParams['axes.facecolor'] = 'black' # background color
         mpl.rcParams['toolbar'] = 'None' # Remove toolbar
         mpl.rcParams['figure.facecolor'] = 'black' # Remove white space around graph        
@@ -69,63 +71,95 @@ class Goal:
         mpl.rcParams['axes.grid'] = True
         mpl.rcParams['grid.color'] = 'grey'
         mpl.rcParams['grid.linewidth'] = 0.08
-
         # Display x and y axis and make color of text grey
-        mpl.rcParams['axes.spines.left'] = True
-        mpl.rcParams['axes.spines.bottom'] = True
         mpl.rcParams['axes.edgecolor'] = 'grey'
         mpl.rcParams['axes.labelcolor'] = 'grey'
         mpl.rcParams['xtick.color'] = 'grey'
         mpl.rcParams['ytick.color'] = 'grey'
-
         # Show label 'hours' on y-axis, make label color grey
         mpl.rcParams['ytick.labelsize'] = 8
         mpl.rcParams['ytick.labelcolor'] = 'grey'
         mpl.rcParams['ytick.labelleft'] = True
-
         # Show label 'days' on x-axis, make label color grey
         mpl.rcParams['xtick.labelsize'] = 8
         mpl.rcParams['xtick.labelcolor'] = 'grey'
         mpl.rcParams['xtick.labelbottom'] = True
 
+        # Remove ticks on x-axis
+        mpl.rcParams['xtick.bottom'] = False
+        mpl.rcParams['ytick.left'] = False
 
+
+        # Set x and y limits, x (days) starts at 1, y (hours)starts at 0
         ax = plt.gca()
-        ax.set_xlim([0, self.goalDuration])
-        ax.set_ylim([0, self.hourGoal])
+        ax.set_xlim([1, self.goalDuration])
+        ax.set_ylim([0, round(self.hourGoal * 1.3, -1)]) # self.hourGoal * 1.3 to give room to see goal line
 
-        x = [i for i in range(self.goalDuration)]
-        y = [sum(self.timeWorkedPerDay[:i+1]) for i in range(self.goalDuration)]
 
+        # Generate x and y values for graph
+        x = [i for i in range(1, self.goalDuration + 1)]
+        y = [sum(self.timeWorkedPerDay[:i+1]) for i in range(1, self.goalDuration + 1)]
         log.debug(f'\nx: {x}\ny: {y}')
+
         # Create graph
-        plt.plot(x, y, label='Hours Worked')
+        log.info(f'Create graph for {self.goalTitle}')
+        plt.scatter(x, y, label='Hours Worked')
+        plt.xlabel('Days')
+        plt.ylabel('Hours')
+
+        # Make scatter plot of x and y values
+
+
+
+
+        # Add title 
+        plt.title(f'\"{self.goalTitle}\"', color='grey', pad=10)
+
+        # draw line at goal
+        plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs')
+
+        # Create legend with label goalTitle
+        plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
+        # Add padding to legend 
+
+
+        #make legend text color grey
+        plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
+        # plt.savefig('plot.png')
         plt.show()
 
-
-if __name__ == "__main__":
-    g = Goal(10, 30, "beast_mode")
-
-    # for i in range(1, 5):
-        # g.addHours(datetime.datetime.utcnow() - datetime.timedelta(days=i, hours=random.randint(0, 20)), random.randint(1, 4))
-
-    #create datetime object for 2 days from now
-    twoDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-    fiveDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-    sevenDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=7)
-    fortyDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=40) # error
     
-    g.addHours(datetime.datetime.utcnow(), 1)
-    g.addHours(datetime.datetime.utcnow(), 1)
-    g.addHours(datetime.datetime.utcnow(), 1)
 
-    g.addHours(twoDaysFromNow, 1.0)
-    g.addHours(twoDaysFromNow, 1.)
-    g.addHours(fiveDaysFromNow, 2.2)
-    
-    g.addHours(sevenDaysFromNow, 3.0)
-    g.addHours(fortyDaysFromNow, 4) # error
 
+
+def testGoal(): 
+    g = Goal(30, 90, "beast_mode")
+
+    # Add 15 random entries to goal
+    for i in range(20):
+        g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.randint(0, 3))
 
     g.displayProgressGraph()
+    # #create datetime object for 2 days from now
+    # twoDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+    # fiveDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+    # sevenDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+    # fortyDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=40) # error
+    
+    # g.addHours(datetime.datetime.utcnow(), 1)
+    # g.addHours(datetime.datetime.utcnow(), 1)
+    # g.addHours(datetime.datetime.utcnow(), 1)
+
+    # g.addHours(twoDaysFromNow, 1.0)
+    # g.addHours(twoDaysFromNow, 1.)
+    # g.addHours(fiveDaysFromNow, 2.2)
+    
+    # g.addHours(sevenDaysFromNow, 3.0)
+    # g.addHours(fortyDaysFromNow, 4) # error
+
+
     # print(g.getInitMessage())
     # print(g.timeWorkedPerDay)
+
+if __name__ == "__main__":
+    testGoal()
