@@ -3,7 +3,9 @@ import io
 import random 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import logging 
+import logging
+
+from numpy import sort 
 import CustomFormatter 
 
 # Initiate logger with custom formatter
@@ -48,7 +50,7 @@ class Goal:
         Your goal, beast_mode, will last 10 days, and require 30 hours of recorded work.
         It begins now, and ends Thur October 3rd, 2022 at 11:59 PM.
         This requires an average of 3hrs of work / day with 0 days off.
-        If you fall behind in tracking, I'll get on you case. 
+        If you fall behind in tracking, I'll get on you casez. 
         If you need help regarding using this bot, type !gh
         """
 
@@ -90,33 +92,57 @@ class Goal:
         mpl.rcParams['ytick.left'] = False
 
 
-        # Set x and y limits, x (days) starts at 1, y (hours)starts at 0
+
+        
+        xx = [i[0].timestamp() for i in self.timeWorked] # Create list of exact seconds of each entry
+        yy = [i[1] for i in self.timeWorked] # create list of hours worked for each entry
+
+        # Sort x and y values by x values
+        xx, yy = zip(*sorted(zip(xx, yy)))
+
+        # sum of each index up to current index 
+        yy = [sum(yy[:i+1]) for i in range(len(yy))] # e.g. [1, 2, 3, 4] -> [1, 3, 6, 10]
+
+
         ax = plt.gca()
-        ax.set_xlim([1, self.goalDuration])
-        ax.set_ylim([0, round(self.hourGoal * 1.3, -1)]) # self.hourGoal * 1.3 to give room to see goal line
+        # Set x and y limits, x (days) starts at 1, y (hours)starts at 0
+        ax.set_xlim([self.startDate.timestamp(), self.endDate.timestamp()])
+
+        if yy[-1] > self.hourGoal:
+            ax.set_ylim([0, yy[-1]])
+        else:
+            ax.set_ylim([0, round(self.hourGoal * 1.3, -1)]) # self.hourGoal * 1.3 to give room to see goal line
+
+
+
+        plt.plot(xx, yy, '-o', color='white', markersize=4, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
+
 
 
         # Generate x and y values for graph
         x = [i for i in range(1, self.goalDuration + 1)]
         y = [sum(self.timeWorkedPerDay[:i+1]) for i in range(1, self.goalDuration + 1)]
-        log.debug(f'\nx: {x}\ny: {y}')
+
+
+        log.debug(f'x: {x}')
+        log.debug(f'y: {y}')
+
+
 
         # Create graph
         log.info(f'Create graph for {self.goalTitle}')
-        plt.scatter(x, y, label='Hours Worked')
+        # plt.scatter(x, y, label='Hours Worked')
         plt.xlabel('Days')
         plt.ylabel('Hours')
 
-        # Make scatter plot of x and y values
-
-
-
-
         # Add title 
-        plt.title(f'\"{self.goalTitle}\"', color='grey', pad=10)
+        plt.title(f'{self.goalTitle} progress chart', color='grey', pad=10)
 
         # draw line at goal
-        plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs')
+        if yy[-1] > self.hourGoal:
+            plt.axhline(y=self.hourGoal, color='g', linestyle='-', label=f'Goal {self.hourGoal}hrs (REACHED + {round(yy[-1] - self.hourGoal, 2)}hrs)')
+        else:
+            plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs')
 
         # Create legend with label goalTitle
         plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
@@ -136,8 +162,8 @@ def testGoal():
     g = Goal(30, 90, "beast_mode")
 
     # Add 15 random entries to goal
-    for i in range(20):
-        g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.randint(0, 3))
+    for i in range(90):
+        g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(1, 5))
 
     g.displayProgressGraph()
     # #create datetime object for 2 days from now
