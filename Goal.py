@@ -69,6 +69,33 @@ class Goal:
 
     # Return graph of progress, x-axis is goalDuration in days, y-axis hours worked
     def displayProgressGraph(self):
+        self.plotInit()
+        
+        # Curate x and y values
+        x = [i[0].timestamp() for i in self.timeWorked]
+        y = [i[1] for i in self.timeWorked] # create list of hours worked for each entry
+        # Sort x and y values by x values
+        x, y = zip(*sorted(zip(x, y)))
+        # sum of each index up to current index 
+        y = [sum(y[:i+1]) for i in range(len(y))] # e.g. [1, 2, 3, 4] -> [1, 3, 6, 10]
+
+        # get current axis
+        axis = plt.gca()
+        # Set x axis length
+        axis.set_xlim(1, self.goalDuration)
+        # Scale x axis to be in days
+        x = [((i - self.startDate.timestamp()) / (60*60*24)) + 1 for i in x]
+        # If largest y value is greater than goal, set y axis to largest y value
+        if y[-1] > self.hourGoal: 
+            axis.set_ylim([0, y[-1]*1.1])
+        else:
+            axis.set_ylim([0, round(self.hourGoal * 1.1, -1)]) # self.hourGoal * 1.1 to give room to see goal line
+
+        # Create graph
+        self.createPlot(x, y)
+        plt.show()
+
+    def plotInit(self):
         mpl.rcParams['lines.linewidth'] = .5
         mpl.rcParams['lines.linestyle'] = '-'
         mpl.rcParams['axes.facecolor'] = 'black' # background color
@@ -96,98 +123,41 @@ class Goal:
         mpl.rcParams['xtick.bottom'] = False
         mpl.rcParams['ytick.left'] = False
 
+    def createPlot(self, xx, yy):
+        log.info(f'Generating plot for {self.goalTitle}')
 
-
-        
-        xx = [i[0].timestamp() for i in self.timeWorked] # Create list of exact seconds of each entry
-        yy = [i[1] for i in self.timeWorked] # create list of hours worked for each entry
-
-        # Sort x and y values by x values
-        xx, yy = zip(*sorted(zip(xx, yy)))
-
-        # sum of each index up to current index 
-        yy = [sum(yy[:i+1]) for i in range(len(yy))] # e.g. [1, 2, 3, 4] -> [1, 3, 6, 10]
-
-
-        ax = plt.gca()
-        # Set x and y limits, x (days) starts at 1, y (hours)starts at 0
-
-        log.debug(self.endDate.timestamp() - self.startDate.timestamp())
-
-        # Set x_start 1, and x_end to goalDuration
-        ax.set_xlim(1, self.goalDuration)
-
-        # scale x axis to be in days from 1 to goalDuration
-        xx = [((i - self.startDate.timestamp()) / (60*60*24)) + 1 for i in xx]
-
-        if yy[-1] > self.hourGoal:
-            ax.set_ylim([0, yy[-1]*1.1])
-        else:
-            ax.set_ylim([0, round(self.hourGoal * 1.1, -1)]) # self.hourGoal * 1.1 to give room to see goal line
-
-
-
-        plt.plot(xx, yy, '-o', color='white', markersize=3.5, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
-
-        # Create graph
-        log.info(f'Create graph for {self.goalTitle}')
-        # plt.scatter(x, y, label='Hours Worked')
+        # Create figure
+        plt.title(f'{self.goalTitle} progress chart', color='grey', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
+        # Plot data
+        plt.plot(xx, yy, '-o', color='white', markersize=3.5, markerfacecolor='black', markeredgecolor='white', markeredgewidth=0.5)
 
-        # Add title 
-        plt.title(f'{self.goalTitle} progress chart', color='grey', pad=10)
-
-        # draw line at goal
+        # Draw goal line at goal, if goal is reached, draw line in green, else draw in red
         if yy[-1] > self.hourGoal:
             plt.axhline(y=self.hourGoal, color='g', linestyle='-', label=f'Goal {self.hourGoal}hrs (REACHED +{round(yy[-1] - self.hourGoal, 2)}hrs)')
         else:
             plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs ({round(self.hourGoal - yy[-1], 2)}hrs left)')
         
-        # Add line that is halfway to goal
+        # Draw half-way line, if halfway is reached, draw line in green, else draw in red
         if yy[-1] >= self.hourGoal / 2:
             plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs (REACHED)')
         else:
             plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {round(self.hourGoal / 2, 2)}hrs')
 
-        # Legend
+        # Legend, set color to grey, set location to upper left... 
         plt.legend(bbox_to_anchor=(.01, .98), loc='upper left', prop={'size': 8}, facecolor='black', edgecolor='grey')
         plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
-        # plt.savefig('plot.png')
-        plt.show()
-
-    
-
 
 
 def testGoal(): 
     g = Goal(30, 90, "beast_mode")
 
-    # Add 15 random entries to goal
+    # Add random entries to goal
     for i in range(50):
         g.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, 30), hours=random.randint(0, 24)), random.uniform(1, 5))
 
     g.displayProgressGraph()
-    # #create datetime object for 2 days from now
-    # twoDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-    # fiveDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-    # sevenDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=7)
-    # fortyDaysFromNow = datetime.datetime.utcnow() + datetime.timedelta(days=40) # error
-    
-    # g.addHours(datetime.datetime.utcnow(), 1)
-    # g.addHours(datetime.datetime.utcnow(), 1)
-    # g.addHours(datetime.datetime.utcnow(), 1)
-
-    # g.addHours(twoDaysFromNow, 1.0)
-    # g.addHours(twoDaysFromNow, 1.)
-    # g.addHours(fiveDaysFromNow, 2.2)
-    
-    # g.addHours(sevenDaysFromNow, 3.0)
-    # g.addHours(fortyDaysFromNow, 4) # error
-
-
-    # print(g.getInitMessage())
-    # print(g.timeWorkedPerDay)
 
 if __name__ == "__main__":
     testGoal()
