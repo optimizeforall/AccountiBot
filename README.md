@@ -37,10 +37,10 @@ If you need help regarding using this bot, type !gh
 You can ask AccountiBot for current graph of progress and he will post this.
 
 ### Incompleted
-![incomplete goal](./Media/plot_incomplete.png)
+![incomplete goal](./Data/plot_incomplete.png)
 
 ### Completed
-![completed goal](./Media/plot_complete.png)
+![completed goal](./Data/plot_complete.png)
 
 ## Invite this bot to your server
 Invite URL = https://discord.com/api/oauth2/authorize?client_id=1047769932089282590&permissions=536267455568&scope=bot

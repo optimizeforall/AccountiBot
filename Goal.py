@@ -68,17 +68,15 @@ class Goal:
     # returns png image of plot
     def generatePlotImage(self):
         self.createPlot()
-        plt.savefig('./Media/'+str(self.authorID)+'.png', dpi=300, bbox_inches='tight')
+        plt.savefig('./Data/'+str(self.authorID)+'.png', dpi=300, bbox_inches='tight')
         plt.close()
 
     def plotInit(self):
-
         font = {
         'weight' : 'bold',
         'size'   : 22}
 
         # make axis labels bigger
-        
         mpl.rc('font', **font)
         mpl.rcParams['lines.linewidth'] = .5
         mpl.rcParams['lines.linestyle'] = '-'
@@ -107,6 +105,10 @@ class Goal:
         mpl.rcParams['xtick.bottom'] = False
         mpl.rcParams['ytick.left'] = False
 
+    def daysRemaining(self):
+        return (self.endDate - datetime.datetime.utcnow()).days
+    
+    
     def createPlot(self):
         self.plotInit()
  

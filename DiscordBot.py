@@ -2,17 +2,14 @@ import datetime
 import os
 import pickle
 import random
-from logger import log
 import discord
-from Goal import Goal 
-
+from Goal import Goal
+from utils import *
 
 def runBot():
     # Enable intent.messages
     intents = discord.Intents.all()
     client = discord.Client(intents=intents)
-
-    discord.Intents.messages = True
 
     @client.event
     async def on_ready():
@@ -26,8 +23,7 @@ def runBot():
             return
 
         # Check if message is a command
-        if message.content.startswith('!'):
-            
+        if message.content.startswith('!'):  
             is_private = True if isinstance(message.channel, discord.channel.DMChannel) else False
             await sendMessage(message, is_private)
         else:
@@ -35,7 +31,6 @@ def runBot():
         
     # import token from system environment
     client.run(os.environ['AccountiBotToken'])
-
 
 async def sendMessage(message,is_private=False):
     response = await respond(message)
@@ -45,15 +40,11 @@ async def sendMessage(message,is_private=False):
         else:
             await message.channel.send(response)
 
-# send image
-async def sendImage(message):
-    await message.channel.send(file=discord.File('Media/plot.png'))
-
 async def respond(message):
     # Parse the message
     pm = message.content.split(' ')
 
-    # Create goal
+    # Create goal: !g [goal title] [goal duration in days] [hours to work] ?[rest days]
     if pm[0] == "!g":
         if not goodFormat(pm):
             return "Invalid format. Use !g [goal title] [goal duration] [hour goal] [days off]"
@@ -71,7 +62,7 @@ async def respond(message):
 
         return goal.getInitMessage()
     
-    # Add hours to goal 
+    # Add hours to goal: !ga [time in hours / minutes]
     if pm[0] == "!ga":
         if not goodFormat(pm):
             return "Invalid format. Use !ga [hours or minutes (h or m)]"
@@ -100,7 +91,7 @@ async def respond(message):
         
         return str(hours) + " hours added to goal: " + goalTitle
 
-    # Display goal
+    # Display goal: !gg
     if pm[0] == "!gg":
         try:
             with open(str(message.author.id) + '.pickle', 'rb') as f:
@@ -108,50 +99,46 @@ async def respond(message):
                 goal = pickle.load(f)
                 goal.generatePlotImage()
                 
-                await message.channel.send(file=discord.File('Media/' + str(message.author.id) + '.png'))
+                await message.channel.send(file=discord.File('Data/' + str(message.author.id) + '.png'))
                 f.close()
         except Exception as e:  
             log.error("Error loading goal: " + str(e))
             return "Error loading goal. Make sure you have the correct title. And have added at least one entry."
-    
+
+    # Delete goal !gd [goal title]
+    if pm[0] == "!gd":
+        if not goodFormat(pm):
+            return "Invalid. To delete goal, use !gd [goal title]."
+        try:
+            os.remove(str(message.author.id) + '.pickle')
+            return "Goal deleted."
+        except Exception as e:
+            log.error("Error deleting goal: " + str(e))
+            return "Error deleting goal. Make sure you have the correct title."
+
+    # List all active goals with user name and hours left: !gl
+    if pm[0] == "!gl":
+        try:
+            goals = []
+            for filename in os.listdir('.'):
+                if filename.endswith('.pickle'):
+                    with open(filename, 'rb') as f:
+                        goal = pickle.load(f)
+                        goals.append(goal)
+                        f.close()
+        except Exception as e:
+            log.error("Error loading goal: " + str(e))
+            return "Error loading goal."
+            
+        if len(goals) == 0:
+            return "No goals found."
+        else:
+            message = ""
+            for goal in goals:
+                hoursRemaining = goal.hourGoal - goal.totalHoursWorked
+                message += goal.authorName + ": \"" + goal.goalTitle + "\", " + str(round(hoursRemaining, 2)) + " hours remaining, with " + str(goal.daysRemaining()) + " days left.\n"
+            return message
 
     if pm[0] == "!gh" or pm[0] == "!help" or pm[0] == "!h":
         return open('help_message.txt', 'r').read()
-    
     return None
-
-def saveGoal(goalTitle, goal):
-    try:
-        with open(goalTitle + '.pickle', 'wb') as f:
-            pickle.dump(goal, f)
-            log.info('Saved goal: ' + goalTitle + '.pickle')
-            f.close()
-    except Exception as e:
-        log.error("Error saving goal: " + str(e))
-
-def goodFormat(pm):
-
-    # !g [goal title] [goal duration in days] [hours to work] ?[rest days]
-    if pm[0] == "!g":
-        if len(pm) != 5 and len(pm) != 4:
-            return False
-        
-        if not pm[2].isdigit() or not pm[3].isdigit():
-            return False
-        elif len(pm) == 5 and not pm[4].isdigit():
-            return False
-
-    # !ga [time in hours / minutes]
-    if pm[0] == "!ga":
-        if len(pm) != 2:
-            return False
-        # Must follow format 1h30m, 90m, 1h, 1.5h
-        if not 'm' in pm[1] and not 'h' in pm[1]:
-            return False
-        
-    # !gg
-    if pm[0] == "!gg":
-        if len(pm) != 2:
-            return False
-
-    return True
