@@ -62,15 +62,16 @@ class Goal:
     def showPlot(self):
         self.createPlot()
         plt.show()
-    
-    def savePlot(self, name):
+
+    # returns png image of plot
+    def generatePlotImage(self):
         self.createPlot()
-        plt.savefig(name)
+        plt.savefig('./Media/'+self.goalTitle+'.png', dpi=300, bbox_inches='tight')
         plt.close()
 
     def plotInit(self):
 
-        font = {'family' : 'normal',
+        font = {
         'weight' : 'bold',
         'size'   : 22}
 
@@ -155,30 +156,3 @@ class Goal:
         # Legend, set color to grey, set location to upper left... 
         plt.legend(bbox_to_anchor=(.98, 0.02), loc='lower right', prop={'size': 10}, facecolor='white', edgecolor='black', framealpha=1)
         # plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
-
-from Goal import Goal
-import datetime
-import random 
-import DiscordBot as bot
-
-def testGoal():
-
-    goalDuration = 20
-    hourGoal = 100
-    goalTitle = 'Learning Rust'
-    daysOff = 0
-
-    goal = Goal(goalDuration, hourGoal, goalTitle, daysOff)
-
-    # Add random entries to goal
-    for i in range(60):
-        goal.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, goalDuration-1), hours=random.randint(0, 24)), random.uniform(.1, 5))
-
-    goal.showPlot()
-    goal.savePlot('./Media/plot.png')
-
-
-if __name__ == '__main__':
-    testGoal()
-    # bot.runBot()
-    
