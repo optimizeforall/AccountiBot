@@ -69,27 +69,35 @@ class Goal:
         plt.close()
 
     def plotInit(self):
+
+        font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 22}
+
+        # make axis labels bigger
+        
+        mpl.rc('font', **font)
         mpl.rcParams['lines.linewidth'] = .5
         mpl.rcParams['lines.linestyle'] = '-'
-        mpl.rcParams['axes.facecolor'] = 'black' # background color
+        mpl.rcParams['axes.facecolor'] = 'gainsboro' # background color
         mpl.rcParams['toolbar'] = 'None' # Remove toolbar
-        mpl.rcParams['figure.facecolor'] = 'black' # Remove white space around graph        
+        mpl.rcParams['figure.facecolor'] = 'gainsboro' # Remove white space around graph        
         # Add grid lines
         mpl.rcParams['axes.grid'] = True
-        mpl.rcParams['grid.color'] = 'grey'
+        mpl.rcParams['grid.color'] = 'black'
         mpl.rcParams['grid.linewidth'] = 0.08
-        # Display x and y axis and make color of text grey
-        mpl.rcParams['axes.edgecolor'] = 'grey'
-        mpl.rcParams['axes.labelcolor'] = 'grey'
-        mpl.rcParams['xtick.color'] = 'grey'
-        mpl.rcParams['ytick.color'] = 'grey'
-        # Show label 'hours' on y-axis, make label color grey
-        mpl.rcParams['ytick.labelsize'] = 8
-        mpl.rcParams['ytick.labelcolor'] = 'grey'
+        # Display x and y axis and make color of text black
+        mpl.rcParams['axes.edgecolor'] = 'black'
+        mpl.rcParams['axes.labelcolor'] = 'black'
+        mpl.rcParams['xtick.color'] = 'black'
+        mpl.rcParams['ytick.color'] = 'black'
+        # Show label 'hours' on y-axis, make label color black
+        mpl.rcParams['ytick.labelsize'] = 10
+        mpl.rcParams['ytick.labelcolor'] = 'black'
         mpl.rcParams['ytick.labelleft'] = True
-        # Show label 'days' on x-axis, make label color grey
-        mpl.rcParams['xtick.labelsize'] = 8
-        mpl.rcParams['xtick.labelcolor'] = 'grey'
+        # Show label 'days' on x-axis, make label color black
+        mpl.rcParams['xtick.labelsize'] = 10
+        mpl.rcParams['xtick.labelcolor'] = 'black'
         mpl.rcParams['xtick.labelbottom'] = True
 
         # Remove ticks on x-axis
@@ -124,26 +132,53 @@ class Goal:
         log.info(f'Generating plot for {self.goalTitle}')
 
         # Create figure
-        plt.title(f'{self.goalTitle} Progress Chart', color='grey', pad=10)
+        plt.title(f'{self.goalTitle} Progress Chart', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
         plt.gcf().set_size_inches(15, 10)
 
         # Plot data
-        plt.plot(x, y, '-o', color='grey', markersize=4, markerfacecolor='grey', markeredgecolor='grey', markeredgewidth=2.5)
+        plt.plot(x, y, '-o', color='black',linewidth=1.5, markersize=5, markerfacecolor='black', markeredgewidth=1)
 
         # Draw goal line at goal, if goal is reached, draw line in green, else draw in red
         if y[-1] > self.hourGoal:
-            plt.axhline(y=self.hourGoal, color='g', linestyle='-', label=f'Goal {self.hourGoal}hrs (REACHED +{round(y[-1] - self.hourGoal, 2)}hrs)')
+            plt.axhline(y=self.hourGoal, color='g', linestyle='-', linewidth=2, label=f'Goal {self.hourGoal}hrs (REACHED +{round(y[-1] - self.hourGoal, 2)}hrs)')
         else:
-            plt.axhline(y=self.hourGoal, color='r', linestyle='-', label=f'Goal {self.hourGoal}hrs ({round(self.hourGoal - y[-1], 2)}hrs left)')
+            plt.axhline(y=self.hourGoal, color='r', linestyle='-', linewidth=2, label=f'Goal {self.hourGoal}hrs ({round(self.hourGoal - y[-1], 2)}hrs left)')
         
         # Draw half-way line, if halfway is reached, draw line in green, else draw in red
         if y[-1] >= self.hourGoal / 2:
-            plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs (REACHED)')
+            plt.axhline(y=self.hourGoal / 2, color='green', linestyle=':', linewidth = 2, label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs (REACHED)')
         else:
-            plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs')
+            plt.axhline(y=self.hourGoal / 2, color='red', linestyle=':', linewidth = 2, label=f'Halfway {int(round(self.hourGoal / 2, 2))}hrs')
 
         # Legend, set color to grey, set location to upper left... 
-        plt.legend(bbox_to_anchor=(.98, 0.02), loc='lower right', prop={'size': 8}, facecolor='black', edgecolor='grey')
-        plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
+        plt.legend(bbox_to_anchor=(.98, 0.02), loc='lower right', prop={'size': 10}, facecolor='white', edgecolor='black', framealpha=1)
+        # plt.setp(plt.gca().get_legend().get_texts(), color='grey') # wierd hacky way to make legend text grey, idk why this works
+
+from Goal import Goal
+import datetime
+import random 
+import DiscordBot as bot
+
+def testGoal():
+
+    goalDuration = 20
+    hourGoal = 100
+    goalTitle = 'Learning Rust'
+    daysOff = 0
+
+    goal = Goal(goalDuration, hourGoal, goalTitle, daysOff)
+
+    # Add random entries to goal
+    for i in range(60):
+        goal.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, goalDuration-1), hours=random.randint(0, 24)), random.uniform(.1, 5))
+
+    goal.showPlot()
+    goal.savePlot('./Media/plot.png')
+
+
+if __name__ == '__main__':
+    testGoal()
+    # bot.runBot()
+    
