@@ -78,7 +78,7 @@ async def respond(message):
             return "Invalid time format. Example: 1h30m, 90m, 1h, 1.5h"
 
         try:
-            with open(str(message.author.id) + '.pickle', 'rb') as f:
+            with open('./Data/' + str(message.author.id) + '.pickle', 'rb') as f:
                 log.info('Loading: ' + str(message.author.id) + '.pickle')
                 goal = pickle.load(f)
                 goal.addHours(datetime.datetime.utcnow(), hours)
@@ -94,7 +94,7 @@ async def respond(message):
     # Display goal: !gg
     if pm[0] == "!gg":
         try:
-            with open(str(message.author.id) + '.pickle', 'rb') as f:
+            with open('./Data/' +str(message.author.id) + '.pickle', 'rb') as f:
                 log.info('Loading: ' + str(message.author.id) + '.pickle')
                 goal = pickle.load(f)
                 goal.generatePlotImage()
@@ -120,7 +120,7 @@ async def respond(message):
     if pm[0] == "!gl":
         try:
             goals = []
-            for filename in os.listdir('.'):
+            for filename in os.listdir('./Data'):
                 if filename.endswith('.pickle'):
                     with open(filename, 'rb') as f:
                         goal = pickle.load(f)

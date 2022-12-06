@@ -3,7 +3,7 @@ import pickle
 
 def saveGoal(goalTitle, goal):
     try:
-        with open(goalTitle + '.pickle', 'wb') as f:
+        with open('./Data/' + goalTitle + '.pickle', 'wb') as f:
             pickle.dump(goal, f)
             log.info('Saved goal: ' + goalTitle + '.pickle')
             f.close()
