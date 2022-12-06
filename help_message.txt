@@ -8,14 +8,11 @@ Examples:
 !g Learn_Rust 10 30 3
 
 To add hours to goal
-!ga [goal_title] [time in hours / minutes]
+!ga [time in hours / minutes]
 
 Examples:
-!ga Learn_Rust 1h55m
-!ga Learn_Rust 90m
+!ga 1h55m
+!ga 90m
 
-To show graph of progress:
-!gg [goal title]
-
-Example:
-!gg Learn_Rust
+To show graph of your progress:
+!gg

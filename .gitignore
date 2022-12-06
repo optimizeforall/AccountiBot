@@ -3,6 +3,7 @@ __pycache__/
 ./Media/plot.png
 test.py
 *.pickle
+*.png
 # ignore all png except plot.png
 !./Media/plot_complete.png
 !./Media/plot_incomplete.png

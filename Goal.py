@@ -7,9 +7,8 @@ import matplotlib as mpl
 import logging
 
 class Goal:
-    def __init__(self, goalDuration, hourGoal: float, goalTitle: str, daysOff=0):
+    def __init__(self, goalDuration, hourGoal: float, goalTitle: str, daysOff=0, authorID=None, authorName=None):
         log.info(f'Creating new goal: {goalTitle}')
-
         self.goalDuration = goalDuration
         self.hourGoal = hourGoal
         self.goalTitle = goalTitle
@@ -20,6 +19,8 @@ class Goal:
         self.timeWorked = [] # list of touples (time of entry, hoursWorked)
         self.succeeded = False
         self.totalHoursWorked = 0
+        self.authorID = authorID
+        self.authorName = authorName
 
     def addHours(self, time: datetime, hours: float):
         dayInGoal = (time - self.startDate).days
@@ -50,9 +51,11 @@ class Goal:
         If you need help regarding using this bot, type !gh
         """
 
+        # make trailing float on 3 digits long
+
         message = f'Your goal, *{self.goalTitle}*, will last **{self.goalDuration} days, and require {self.hourGoal} hours of recorded work**.\n'
         message += f'It begins now, and ends ***{self.endDate.strftime("%a %B %dth, %Y at %I:%M %p")}*** UTC.\n'
-        message += f'This requires an average of **{self.hoursPerDay}hrs of work / day** with {self.daysOff} days off.\n'
+        message += f'This requires an average of **{round(self.hoursPerDay, 2)}hrs of work / day** with {self.daysOff} days off.\n'
         message += f'If you fall behind in tracking, *I\'ll get on you case. 💪* Good luck!\n'
         message += f'\nIf you need help regarding using this bot, type !gh'
 
@@ -65,7 +68,7 @@ class Goal:
     # returns png image of plot
     def generatePlotImage(self):
         self.createPlot()
-        plt.savefig('./Media/'+self.goalTitle+'.png', dpi=300, bbox_inches='tight')
+        plt.savefig('./Media/'+str(self.authorID)+'.png', dpi=300, bbox_inches='tight')
         plt.close()
 
     def plotInit(self):
@@ -116,23 +119,25 @@ class Goal:
         y = [sum(y[:i+1]) for i in range(len(y))] # e.g. [1, 2, 3, 4] -> [1, 3, 6, 10]
         log.debug(f'Sum of hours worked: {y[-1]}')
         # get current axis
-    # #create datetime object for 2 days from now
         axis = plt.gca()
         # Set x axis length
-        axis.set_xlim(1, self.goalDuration)
+        axis.set_xlim(0, self.goalDuration)
         # Scale x axis to be in days
         x = [((i - self.startDate.timestamp()) / (60*60*24)) for i in x]
+
+        print('x: ', x)
+        print('y: ', y)
 
         # If largest y value is greater than goal, set y axis to largest y value
         if y[-1] > self.hourGoal: 
             axis.set_ylim([0, y[-1]*1.1])
         else:
-            axis.set_ylim([0, round(self.hourGoal * 1.1, -1)]) # self.hourGoal * 1.1 to give room to see goal line
+            axis.set_ylim([0, round(self.hourGoal * 1.1)])
 
         log.info(f'Generating plot for {self.goalTitle}')
 
         # Create figure
-        plt.title(f'{self.goalTitle} Progress Chart', pad=10)
+        plt.title(f'\'{self.goalTitle}\' Progress Chart ({self.authorName})', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
         plt.gcf().set_size_inches(15, 10)

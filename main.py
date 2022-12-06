@@ -1,7 +1,8 @@
 import pickle
 from Goal import Goal
 import datetime
-import random 
+import random
+from logger import log
 import DiscordBot as bot
 
 def testGoal():
@@ -16,19 +17,17 @@ def testGoal():
     # Add random entries to goal
     for i in range(20):
         goal.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, goalDuration-1), hours=random.randint(0, 24)), random.uniform(.1, 5))
-
+    
     try:
         with open(goalTitle + '.pickle', 'wb') as f:
             pickle.dump(goal, f)
             f.close()
     except Exception as e:
-        print("Error saving goal: " + str(e))
+        log.error("Error saving goal: " + str(e))
 
-    # goal.generatePlot()
-    # goal.showPlot()
-
-
+    # goal.generatePlotImage()
+    goal.showPlot()
 
 if __name__ == '__main__':
-    testGoal()
+    # testGoal()
     bot.runBot()
