@@ -1,11 +1,11 @@
 Hello, I'm AccountBot.
 
 To add a new goal:
-!g [goal duration] [hours to work] [goal title] ?[rest days]
+!g [goal title] [goal duration in days] [hours to work] ?[rest days]
 
 Examples: 
-!g 10 30 Learn_Rust 
-!g 10 30 Learn_Rust 3
+!g Learn_Rust 10 30 
+!g Learn_Rust 10 30 3
 
 To add hours to goal
 !ga [goal_title] [time in hours / minutes]

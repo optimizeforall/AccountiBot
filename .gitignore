@@ -2,3 +2,7 @@ __pycache__/
 .gitignore
 ./Media/plot.png
 test.py
+*.pickle
+# ignore all png except plot.png
+!./Media/plot_complete.png
+!./Media/plot_incomplete.png

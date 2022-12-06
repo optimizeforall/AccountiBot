@@ -56,17 +56,17 @@ async def respond(message):
     # Create goal
     if pm[0] == "!g":
         if goalFormat(pm):
-            goalDuration = int(pm[1])
-            hourGoal = int(pm[2])
-            goalTitle = pm[3]
+            goalTitle = pm[1]
+            goalDuration = int(pm[2])
+            hourGoal = int(pm[3])
             daysOff = 0 if len(pm) == 4 else int(pm[4])
 
             goal = Goal(goalDuration, hourGoal, goalTitle, daysOff)
-            saveGoal(pm[3], goal)
+            saveGoal(goalTitle, goal)
 
             return goal.getInitMessage()
         else:
-            return "Invalid format. Use !g [goal duration] [hour goal] [goal title] [days off]"
+            return "Invalid format. Use !g [goal title] [goal duration] [hour goal] [days off]"
     
     # Add hours to goal
     if pm[0] == "!ga":

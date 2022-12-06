@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging
 
-
 class Goal:
-    def __init__(self, goalDuration: float, hourGoal: float, goalTitle: str, daysOff=0):
+    def __init__(self, goalDuration, hourGoal: float, goalTitle: str, daysOff=0):
         log.info(f'Creating new goal: {goalTitle}')
 
         self.goalDuration = goalDuration
