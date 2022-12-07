@@ -1,9 +1,10 @@
+import os
 import pickle
 from Goal import Goal
 import datetime
 import random
 from logger import log
-import DiscordBot as bot
+from DiscordBot import DiscordBot as bot
 
 def testGoal():
 
@@ -30,4 +31,5 @@ def testGoal():
 
 if __name__ == '__main__':
     # testGoal()
-    bot.runBot()
+    client = bot(command_prefix='!', self_bot=False)
+    client.run(str(os.environ['AccountiBotToken']))

@@ -7,21 +7,19 @@ import discord
 from Goal import Goal
 from utils import *
 
-def runBot():
+class DiscordBot(commands.Bot):
     # Enable intent.messages
-    intents = discord.Intents.all()
-    client = discord.Client(intents=intents)
-    activeGoals = {}
+    
+    def __init__(self, command_prefix, self_bot):
+        super().__init__(command_prefix='!', intents=discord.Intents.all())
 
-    @client.event
-    async def on_ready():
-        log.info(f'Logged in as {client.user}')
+    async def on_ready(self):
+        log.info(f'Logged in as {self.user}')
 
-    @client.event
-    async def on_message(message):
+    async def on_message(self, message):
         log.info(f'Message received from {message.author}: {message.content}')
         # Don't respond to ourselves
-        if message.author == client.user:
+        if message.author == self.user:
             return
 
         # Check if message is a command
@@ -30,9 +28,7 @@ def runBot():
             await sendMessage(message, is_private)
         else:
             return
-        
-    # import token from system environment
-    client.run(os.environ['AccountiBotToken'])
+    
 
 async def sendMessage(message,is_private=False):
     response = await respond(message)
