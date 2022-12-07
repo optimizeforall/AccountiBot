@@ -77,29 +77,22 @@ async def respond(message):
         else:
             return "Invalid time format. Example: 1h30m, 90m, 1h, 1.5h"
         try:
-            with open('./Data/' + str(message.author.id) + '.pickle', 'rb') as f:
-                log.info('Loading: ' + str(message.author.id) + '.pickle')
-                goal = pickle.load(f)
-                goal.addHours(datetime.datetime.utcnow(), hours)
-                goalTitle = goal.goalTitle
-                saveGoal(str(message.author.id), goal)
-                f.close()
+
+            goal = loadGoal(str(message.author.id))
+            goal.addHours(datetime.datetime.utcnow(), hours)
+            saveGoal(str(message.author.id), goal)
         except Exception as e:  
             log.error("Error loading goal: " + str(e))
             return "Error loading goal. Make sure you have the correct title."
         
-        return str(hours) + " hours added to goal: " + goalTitle
+        return str(hours) + " hours added to goal: " + goal.goalTitle
 
     # Display goal: !gg
     if pm[0] == "!gg":
         try:
-            with open('./Data/' +str(message.author.id) + '.pickle', 'rb') as f:
-                log.info('Loading: ' + str(message.author.id) + '.pickle')
-                goal = pickle.load(f)
-                goal.generatePlotImage()
-                
-                await message.channel.send(file=discord.File('Data/' + str(message.author.id) + '.png'))
-                f.close()
+            goal = loadGoal(str(message.author.id))
+            goal.generatePlotImage()
+            await message.channel.send(file=discord.File('Data/' + str(message.author.id) + '.png'))
         except Exception as e:  
             log.error("Error loading goal: " + str(e))
             return "Error loading goal. Make sure you have the correct title. And have added at least one entry."
@@ -119,9 +112,9 @@ async def respond(message):
     if pm[0] == "!gl":
         try:
             goals = []
-            for filename in os.listdir('./Data'):
+            for filename in os.listdir('./Data/'):
                 if filename.endswith('.pickle'):
-                    with open(filename, 'rb') as f:
+                    with open('./Data/' + filename, 'rb') as f:
                         goal = pickle.load(f)
                         goals.append(goal)
                         f.close()
