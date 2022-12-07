@@ -55,8 +55,6 @@ class Goal:
 
         return message
         
-        
-
     def getInitMessage(self):
         """
         Your goal, beast_mode, will last 10 days, and require 30 hours of recorded work.
@@ -79,6 +77,12 @@ class Goal:
     def showPlot(self):
         self.createPlot()
         plt.show()
+
+    def startTimer():
+        pass
+        
+
+
 
     # returns png image of plot
     def generatePlotImage(self):
