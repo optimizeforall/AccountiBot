@@ -13,18 +13,6 @@ class DiscordBot(commands.Bot):
     def __init__(self, command_prefix, self_bot):
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
-
-    # Make sure no active goals are beyond 24 hours
-    @tasks.loop(seconds=5)
-    async def checkGoals(self):
-        # Iterate through all active goals and check if they are beyond 24 hours
-        for authorID, time in self.activeGoals.items():
-            if (datetime.datetime.utcnow() - time).total_seconds() > 0:
-                # Goal is beyond 24 hours, remove it
-                self.activeGoals.pop(authorID)
-                log.info("Removing goal for " + authorID + " due to inactivity.")
-                await self.get_user(int(authorID)).send("Your timer has been deleted due to inactivity. Make sure to use **!gstop** when using the timer.")
-    
     async def on_ready(self):
         log.info(f'Logged in as {self.user}')
 
@@ -142,12 +130,36 @@ class DiscordBot(commands.Bot):
 
 
         if pm[0] == "!gstart":
-            self.activeGoals[str(message.author.id)] = datetime.datetime.utcnow()
+
+            try:
+                with open('./Data/activegoals.pickle', 'rb') as f:
+                    activeGoals = pickle.load(f)
+                    f.close()
+            except Exception as e:
+                log.error("Error loading active goals: " + str(e))
+                return "Error loading active goals."
+
+            activeGoals[str(message.author.id)] = datetime.datetime.utcnow()
+            
+            # save active goal to file using pickle
+            with open('./Data/activegoals.pickle', 'wb') as f:
+                pickle.dump(activeGoals, f)
+                f.close()
+
             return "Goal started now. Use !gstop to stop goal."
 
         if pm[0] == "!gstop":
-            if str(message.author.id) in self.activeGoals:
-                hoursWorked = (datetime.datetime.utcnow() - self.activeGoals[str(message.author.id)]).total_seconds() / (60 * 60)
+            # load active goal from file using pickle
+            try:
+                with open('./Data/activegoals.pickle', 'rb') as f:
+                    activeGoals = pickle.load(f)
+                    f.close()
+            except Exception as e:
+                log.error("Error loading active goals: " + str(e))
+                return "Error loading active goals."
+            
+            if str(message.author.id) in activeGoals:
+                hoursWorked = (datetime.datetime.utcnow() - activeGoals[str(message.author.id)]).total_seconds() / (60 * 60)
 
                 try:
                     goal = loadGoal(str(message.author.id))
@@ -157,7 +169,7 @@ class DiscordBot(commands.Bot):
                     log.error("Error loading goal: " + str(e))
                     return "Error loading goal. Make sure you have the correct title."
 
-                del self.activeGoals[str(message.author.id)]
+                del activeGoals[str(message.author.id)]
                 message = "Goal stopped. " + str(round(hoursWorked, 2)) + " hours added to goal: " + goal.goalTitle + "\n"
                 message += goal.getStatusMessage()
                 return message
@@ -178,3 +190,18 @@ class DiscordBot(commands.Bot):
         if pm[0] == "!gh" or pm[0] == "!help" or pm[0] == "!h":
             return open('help_message.txt', 'r').read()
         return None
+
+# class MyCog(commands.Cog):
+#     def __init__(self, bot):
+#         self.bot = bot
+#         self.activeGoals = {}
+
+#     def cog_unload(self):
+#         self.checkActiveGoals.cancel()
+
+#     # check if active goal is younger than 24 hours every 1 hour
+#     @tasks.loop(seconds=5.0)
+#     async def checkActiveGoals(self):
+#         print("Checking active goals...")
+
+
