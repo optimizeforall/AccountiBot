@@ -12,6 +12,18 @@ class DiscordBot(commands.Bot):
 
     def __init__(self, command_prefix, self_bot):
         super().__init__(command_prefix='!', intents=discord.Intents.all())
+
+
+    # Make sure no active goals are beyond 24 hours
+    @tasks.loop(seconds=5)
+    async def checkGoals(self):
+        # Iterate through all active goals and check if they are beyond 24 hours
+        for authorID, time in self.activeGoals.items():
+            if (datetime.datetime.utcnow() - time).total_seconds() > 0:
+                # Goal is beyond 24 hours, remove it
+                self.activeGoals.pop(authorID)
+                log.info("Removing goal for " + authorID + " due to inactivity.")
+                await self.get_user(int(authorID)).send("Your timer has been deleted due to inactivity. Make sure to use **!gstop** when using the timer.")
     
     async def on_ready(self):
         log.info(f'Logged in as {self.user}')
