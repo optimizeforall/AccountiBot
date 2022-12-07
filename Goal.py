@@ -49,7 +49,7 @@ class Goal:
         You must work 1.0 hours per day to complete this goal on time.
         """
 
-        message = f'Your goal, *{self.goalTitle}*, is **{round(self.totalHoursWorked / self.hourGoal * 100, 2)}% complete**. You\'ve worked **{round(self.totalHoursWorked, 2)} hours** out of {self.hourGoal}.\n'
+        message = f'Your goal, *{self.goalTitle}*, is **{round(self.totalHoursWorked / self.hourGoal * 100, 2)}%** complete. You\'ve totaled **{round(self.totalHoursWorked, 2)}hrs**, with **{round(self.hourGoal - self.totalHoursWorked, 2)}hrs** remaining.\n'
         message += f'You have **{self.goalDuration - (datetime.datetime.utcnow() - self.startDate).days} days** left to complete this goal with {self.daysOff} days off.\n'
         message += f'You must work **{round(self.hoursPerDay, 2)} hours per day** to complete this goal on time.\n'
 
