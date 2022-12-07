@@ -7,3 +7,8 @@ test.py
 # ignore all png except plot.png
 !./Data/plot_complete.png
 !./Data/plot_incomplete.png
+.replit
+poetry.lock
+pyproject.toml
+replit.nix
+venv/
