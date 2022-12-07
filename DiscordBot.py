@@ -76,7 +76,6 @@ async def respond(message):
             hours = float(pm[1].split('h')[0]) + float(pm[1].split('h')[1].split('m')[0])/60
         else:
             return "Invalid time format. Example: 1h30m, 90m, 1h, 1.5h"
-
         try:
             with open('./Data/' + str(message.author.id) + '.pickle', 'rb') as f:
                 log.info('Loading: ' + str(message.author.id) + '.pickle')
@@ -138,6 +137,16 @@ async def respond(message):
                 hoursRemaining = goal.hourGoal - goal.totalHoursWorked
                 message += goal.authorName + ": \"" + goal.goalTitle + "\", " + str(round(hoursRemaining, 2)) + " hours remaining, with " + str(goal.daysRemaining()) + " days left.\n"
             return message
+
+    # Get status of goal: !gs
+    if pm[0] == "!gs":
+        try: 
+            goal = loadGoal(str(message.author.id))
+        except Exception as e:
+            log.error("Error loading goal: " + str(e))
+            return "Error loading goal. Make sure you have active goal."
+
+        return goal.getStatusMessage()
 
     if pm[0] == "!gh" or pm[0] == "!help" or pm[0] == "!h":
         return open('help_message.txt', 'r').read()

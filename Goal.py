@@ -42,6 +42,21 @@ class Goal:
                 self.succeeded = True
                 log.info(f'Goal {self.goalTitle} succeeded!')
 
+    def getStatusMessage(self):
+        """
+        Your goal, beast_mode, is 50% complete. You've worked 15 hours out of 30.
+        You have 15 days left to complete this goal with 0 days off.
+        You must work 1.0 hours per day to complete this goal on time.
+        """
+
+        message = f'Your goal, *{self.goalTitle}*, is **{round(self.totalHoursWorked / self.hourGoal * 100, 2)}% complete**. You\'ve worked **{round(self.totalHoursWorked, 2)} hours** out of {self.hourGoal}.\n'
+        message += f'You have **{self.goalDuration - (datetime.datetime.utcnow() - self.startDate).days} days** left to complete this goal with {self.daysOff} days off.\n'
+        message += f'You must work **{round(self.hoursPerDay, 2)} hours per day** to complete this goal on time.\n'
+
+        return message
+        
+        
+
     def getInitMessage(self):
         """
         Your goal, beast_mode, will last 10 days, and require 30 hours of recorded work.
@@ -107,7 +122,6 @@ class Goal:
 
     def daysRemaining(self):
         return (self.endDate - datetime.datetime.utcnow()).days
-    
     
     def createPlot(self):
         self.plotInit()

@@ -1,18 +1,21 @@
 Hello, I'm AccountBot.
 
-To add a new goal:
+**To add a new goal:**
 !g [goal title] [goal duration in days] [hours to work] ?[rest days]
 
-Examples: 
+***Examples: ***
 !g Learn_Rust 10 30 
 !g Learn_Rust 10 30 3
 
-To add hours to goal
+**To add hours to goal**
 !ga [time in hours / minutes]
 
-Examples:
+***Examples:***
 !ga 1h55m
 !ga 90m
 
-To show graph of your progress:
+**To show graph of your progress:**
 !gg
+
+**Check status of goal**
+!gs

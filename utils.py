@@ -1,6 +1,13 @@
 from logger import log
 import pickle
 
+def loadGoal(authorId):
+    with open('./Data/' + str(authorId) + '.pickle', 'rb') as f:
+        log.info('Loading: ' + str(authorId) + '.pickle')
+        goal = pickle.load(f)
+        f.close()
+    return goal
+    
 def saveGoal(goalTitle, goal):
     try:
         with open('./Data/' + goalTitle + '.pickle', 'wb') as f:
