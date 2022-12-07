@@ -1,3 +1,4 @@
+from discord.ext import tasks, commands
 import datetime
 import os
 import pickle
@@ -10,6 +11,20 @@ def runBot():
     # Enable intent.messages
     intents = discord.Intents.all()
     client = discord.Client(intents=intents)
+
+    # every so often share progress with members
+    # @tasks.loop(hours=random.randint(9, 12))
+    # async def shareProgress():
+    #     for guild in client.guilds:
+    #         for member in guild.members:
+    #             if member.bot:
+    #                 continue
+    #             try:
+    #                 goal = loadGoal(str(member.id))
+    #                 await member.send(goal.getProgressMessage())
+    #             except Exception as e:
+    #                 log.error("Error sharing progress: " + str(e))
+        
 
     @client.event
     async def on_ready():
@@ -131,7 +146,7 @@ async def respond(message):
                 message += goal.authorName + ": \"" + goal.goalTitle + "\", " + str(round(hoursRemaining, 2)) + " hours remaining, with " + str(goal.daysRemaining()) + " days left.\n"
             return message
 
-    # Get status of goal: !gs
+    # Get status of goal: !gs=
     if pm[0] == "!gs":
         try: 
             goal = loadGoal(str(message.author.id))
