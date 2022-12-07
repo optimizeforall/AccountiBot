@@ -33,3 +33,5 @@ if __name__ == '__main__':
     # testGoal()
     client = bot(command_prefix='!', self_bot=False)
     client.run(str(os.environ['AccountiBotToken']))
+    # cog = MyCog()
+    # client.add_cog(cog)
