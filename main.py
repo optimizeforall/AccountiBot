@@ -1,10 +1,11 @@
 import os
 import pickle
-from Goal import Goal
+from goal import Goal
 import datetime
 import random
+import discord
 from logger import log
-from DiscordBot import DiscordBot as bot
+import discord_bot
 
 def testGoal():
 
@@ -17,7 +18,7 @@ def testGoal():
 
     # Add random entries to goal
     for i in range(20):
-        goal.addHours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, goalDuration-1), hours=random.randint(0, 24)), random.uniform(.1, 5))
+        goal.add_hours(datetime.datetime.utcnow() + datetime.timedelta(days=random.randint(0, goalDuration-1), hours=random.randint(0, 24)), random.uniform(.1, 5))
     
     try:
         with open(goalTitle + '.pickle', 'wb') as f:
@@ -27,11 +28,16 @@ def testGoal():
         log.error("Error saving goal: " + str(e))
 
     # goal.generatePlotImage()
-    goal.showPlot()
+    goal.show_plot()
+
+def main():
+
+
+    discord_bot.runBot()
+
+    # DiscordBot(command_prefix='!', intents=discord.Intents.all())
+    
 
 if __name__ == '__main__':
+    main()
     # testGoal()
-    client = bot(command_prefix='!', self_bot=False)
-    client.run(str(os.environ['AccountiBotToken']))
-    # cog = MyCog()
-    # client.add_cog(cog)

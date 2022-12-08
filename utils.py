@@ -1,23 +1,23 @@
 from logger import log
 import pickle
 
-def loadGoal(authorId):
-    with open('./Data/' + str(authorId) + '.pickle', 'rb') as f:
+def load_goal(authorId):
+    with open('./data/goals/' + str(authorId) + '.pickle', 'rb') as f:
         log.info('Loading: ' + str(authorId) + '.pickle')
         goal = pickle.load(f)
         f.close()
     return goal
     
-def saveGoal(goalTitle, goal):
+def save_goal(goalTitle, goal):
     try:
-        with open('./Data/' + goalTitle + '.pickle', 'wb') as f:
+        with open('./data/goals/' + goalTitle + '.pickle', 'wb') as f:
             pickle.dump(goal, f)
             log.info('Saved goal: ' + goalTitle + '.pickle')
             f.close()
     except Exception as e:
         log.error("Error saving goal: " + str(e))
 
-def goodFormat(pm):
+def valid_format(pm):
     # !g [goal title] [goal duration in days] [hours to work] ?[rest days]
     if pm[0] == "!g":
         if len(pm) != 5 and len(pm) != 4:
