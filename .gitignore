@@ -5,12 +5,14 @@ test.py
 test_bot.py
 *.pickle
 ./data/goals/*.pickle
-# ignore all png except plot.png
-*.png
-!./data/plot_complete.png
-!./data/plot_incomplete.png
 .replit
 poetry.lock
 pyproject.toml
 replit.nix
 venv/
+
+# ignore all png except ./data/plot_complete.png and ./data/plot_incomplete.png
+./data/goals/*.pickle
+!./data/*.png
+!./data/plot_complete.png
+!./data/plot_incomplete.png
