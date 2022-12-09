@@ -69,7 +69,7 @@ def runBot():
         
         try:
             goal = load_goal(str(author_ID))
-            goal.add_hzsours(datetime.datetime.utcnow(), hours)
+            goal.add_hours(datetime.datetime.utcnow(), hours)
             save_goal(str(author_ID), goal)
             
         except Exception as e:  
@@ -78,7 +78,7 @@ def runBot():
             return
         
         await ctx.send(str(hours) + " hours added to goal: " + goal.goal_title)
-        await ctx.send(goal.getStatusMessage())
+        await ctx.send(goal.get_status_message())
 
     # Display goal chart: !gg
     @client.command(name='gg', help='!gg')
@@ -86,12 +86,12 @@ def runBot():
         author_ID = ctx.message.author.id
 
         try:
-            goal = load_goal(str(author_ID))
-            goal.generatePlotImage()
+            user_goal = load_goal(str(author_ID))
+            user_goal.generate_plot_image()
             await ctx.send(file=discord.File('data/' + str(author_ID) + '.png'))
         except Exception as e:  
             log.error("Error loading goal: " + str(e))
-            return "Error loading goal. Make sure you have the correct title. And have added at least one entry."
+            await ctx.send("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
 
     # Delete goal: !gd [goal title]
     @client.command(name='gd', help='!gd')
@@ -212,9 +212,7 @@ def runBot():
         parsed_message = ctx.message.content.split()
 
         if parsed_message[0] == "!gh" or parsed_message[0] == "!help" or parsed_message[0] == "!h":
-             await ctx.send(open('help_message.txt', 'r').read())
-
-
+             await ctx.send(open('./data/help_message.txt', 'r').read())
 
     client.run(str(os.environ['AccountiBotToken']))
 

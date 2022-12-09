@@ -2,6 +2,7 @@ __pycache__/
 .gitignore
 ./Data/plot.png
 test.py
+test_bot.py
 *.pickle
 *.png
 # ignore all png except plot.png
