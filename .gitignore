@@ -1,13 +1,14 @@
 __pycache__/
 .gitignore
-./Data/plot.png
+./data/plot.png
 test.py
 test_bot.py
 *.pickle
-*.png
+./data/goals/*.pickle
 # ignore all png except plot.png
-!./Data/plot_complete.png
-!./Data/plot_incomplete.png
+*.png
+!./data/plot_complete.png
+!./data/plot_incomplete.png
 .replit
 poetry.lock
 pyproject.toml
