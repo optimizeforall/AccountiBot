@@ -2,6 +2,7 @@
 test.py
 __pycache__
 test_boty.py
+data_backup
 data/*.pickle
 data/*.png
 data/goals/*
