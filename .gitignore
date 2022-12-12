@@ -7,9 +7,10 @@ data/*.pickle
 data/*.png
 data/goals/*
 data/*.png
-data_backup;
+data_backup
 
 # Don't ignore these 
+!data/goals
 !data/plot_complete.png
 !data/plot_incomplete.png
 !data/activegoals.pickle

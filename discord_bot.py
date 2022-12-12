@@ -54,7 +54,7 @@ def run_bot():
 
     # Add hours
     @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=1014983443756613672))
-    async def add_time(int: discord.Interaction, hours: str, minutes: str):
+    async def add_time(int: discord.Interaction, hours: str, minutes: str, comment: str = None):
 
         author_ID = int.user.id        
         time_in_hours = float(hours) + float(minutes)/60
@@ -62,7 +62,7 @@ def run_bot():
         # Load goal from file and add hours
         try:
             goal = load_goal(str(author_ID))
-            goal.add_hours(datetime.datetime.utcnow(), time_in_hours)
+            goal.add_hours(datetime.datetime.utcnow(), time_in_hours, comment)
             save_goal(str(author_ID), goal)
         except Exception as e:
             log.error("Error loading goal: " + str(e))
@@ -73,6 +73,21 @@ def run_bot():
             goal.goal_title + "\n"
         message += goal.get_status_message()
         await int.response.send_message(message)
+    
+    # Display log of hours worked on goal 
+    @tree.command(name='log', description='Display log of hours worked on goal', guild=discord.Object(id=1014983443756613672))
+    async def display_log(int: discord.Interaction):
+        author_ID = int.user.id
+
+        
+
+        try:
+            goal = load_goal(str(author_ID))
+            await int.response.send_message(goal.get_log(), ephemeral=True)
+        except Exception as e:
+            log.error("Error loading goal: " + str(e))
+            await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
+
 
     # Display progress chart
     @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=1014983443756613672))
@@ -143,7 +158,7 @@ def run_bot():
 
     # Stop goal timer:
     @tree.command(name='stop', description='Stop goal timer', guild=discord.Object(id=1014983443756613672))
-    async def stop_goal(int: discord.Interaction):
+    async def stop_goal(int: discord.Interaction, comment: str = None):
         author_ID = int.user.id
 
         try:
@@ -160,7 +175,7 @@ def run_bot():
 
             try:
                 goal = load_goal(str(author_ID))
-                goal.add_hours(datetime.datetime.utcnow(), hoursWorked)
+                goal.add_hours(datetime.datetime.utcnow(), hoursWorked, comment)
                 save_goal(str(author_ID), goal)
             except Exception as e:
                 log.error("Error loading goal: " + str(e))

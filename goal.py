@@ -41,17 +41,23 @@ class Goal:
                 log.debug(f'Goal completed! Total hours worked: {self.total_hours_worked}')
                 self.succeeded = True
                 log.info(f'Goal {self.goal_title} succeeded!')
-    def list_time_entries(self):
+
+
+    def get_log(self):
         message = f'Here are all the time entries for {self.goal_title}:\n'
 
-        hours = entry[1]
-        minutes = round((hours - int(hours)) * 60)
-        hours = int(hours)
+        # determine users timezone
 
+        # use enumerate to get index
 
-        for entry in self.time_worked:
-            message += f'{entry[0].strftime("%m/%d/%Y, %H:%M:%S")} - {hours}:{minutes:02d} - {entry[2]}\n'
-        return message
+        for i, entry in enumerate(self.time_worked):
+            hours = entry[1]
+            minutes = round((hours - int(hours)) * 60)
+            hours = int(hours)
+            log_message = entry[2] if entry[2] else 'N/A'
+
+            message += f' {i+1}. {hours}:{minutes:02d} - {log_message}\n'
+        return message;
 
 
     def get_status_message(self):
@@ -130,7 +136,7 @@ class Goal:
         mpl.rcParams['xtick.bottom'] = False
         mpl.rcParams['ytick.left'] = False
 
-    def days_remaining(self):
+    def day_remaining(self):
         return (self.end_date - datetime.datetime.utcnow()).days
     
     def create_plot(self):

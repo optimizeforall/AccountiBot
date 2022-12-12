@@ -2,9 +2,9 @@ from logger import log
 import pickle
 
 # Load goal object from file usizng pickle
-def load_goal(authorId):
-    with open('./data/goals/' + str(authorId) + '.pickle', 'rb') as f:
-        log.info('Loading: ' + str(authorId) + '.pickle')
+def load_goal(authorID): 
+    with open('./data/goals/' + str(authorID) + '.pickle', 'rb') as f:
+        log.info('Loading: ' + str(authorID) + '.pickle')
         goal = pickle.load(f)
     return goal
     
