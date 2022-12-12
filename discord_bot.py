@@ -18,18 +18,19 @@ def run_bot():
         async def on_ready(self):
             log.info(f'{self.user} has connected to Discord!')
             if not self.synced:
-                await tree.sync(guild=discord.Object(id=1014983443756613672))
+                await tree.sync(guild=discord.Object(id=guild_id))
                 # self.synced = True
 
     client = aclient()
     tree = discord.app_commands.CommandTree(client)
+    guild_id = 1014983443756613672;
 
     @tree.command(name="ping", description="Ping the ping")
     async def slashing_commanding(int: discord.Interaction):
         await int.response.send_message("pongy")
 
     # Create goal
-    @tree.command(name="newgoal", description="Create a new goal! Warning: will override old goal.", guild=discord.Object(id=1014983443756613672))
+    @tree.command(name="newgoal", description="Create a new goal! Warning: will override old goal.", guild=discord.Object(id=guild_id))
     async def create_goal(int: discord.Interaction, goal_title: str, goal_days: int, goal_hours: int, days_off: int = 0):
         # Create variables from parsed message
         author_ID = int.user.id
@@ -54,7 +55,7 @@ def run_bot():
         await int.response.send_message(goal.get_init_message())
 
     # Add hours
-    @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=guild_id))
     async def add_time(int: discord.Interaction, hours: str, minutes: str, comment: str = None):
 
         author_ID = int.user.id
@@ -78,7 +79,7 @@ def run_bot():
         await int.response.send_message(message)
 
     # Display log of hours worked on goal
-    @tree.command(name='log', description='Display log of hours worked on goal', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='log', description='Display log of hours worked on goal', guild=discord.Object(id=guild_id))
     async def display_log(int: discord.Interaction):
         author_ID = int.user.id
 
@@ -91,7 +92,7 @@ def run_bot():
 
     # Display progress chart
 
-    @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=guild_id))
     async def display_goal(int: discord.Interaction):
         author_ID = int.user.id
 
@@ -105,7 +106,7 @@ def run_bot():
             await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
 
     # Delete goal
-    @tree.command(name='deletegoal', description='Delete goal', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='deletegoal', description='Delete goal', guild=discord.Object(id=guild_id))
     async def delete_goal(int: discord.Interaction):
         author_ID = int.user.id
 
@@ -119,7 +120,7 @@ def run_bot():
             await int.response.send_message("Error deleting goal. Make sure you have the correct title.")
 
     # List all active goals on server
-    @tree.command(name='listgoals', description='List all active goals', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='listgoals', description='List all active goals', guild=discord.Object(id=guild_id))
     async def list_goals(int: discord.Interaction):
         goals = []
         try:
@@ -147,7 +148,7 @@ def run_bot():
                 await int.response.send_message(message)
 
     # Start goal timer
-    @tree.command(name='start', description='Start goal timer', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='start', description='Start goal timer', guild=discord.Object(id=guild_id))
     async def start_goal(int: discord.Interaction):
         try:
             with open('./data/activegoals.pickle', 'rb') as f:
@@ -166,7 +167,7 @@ def run_bot():
         await int.response.send_message("Goal started now. Use /gstop to stop goal.")
 
     # Stop goal timer:
-    @tree.command(name='stop', description='Stop goal timer', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='stop', description='Stop goal timer', guild=discord.Object(id=guild_id))
     async def stop_goal(int: discord.Interaction, comment: str = None):
         author_ID = int.user.id
 
@@ -200,7 +201,7 @@ def run_bot():
             await int.response.send_message("No active goal.")
 
     # Display active goals status
-    @tree.command(name='status', description='Display active goals status', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='status', description='Display active goals status', guild=discord.Object(id=guild_id))
     async def display_active_goals(int: discord.Interaction):
         try:
             goal = load_goal(str(int.user.id))
@@ -213,7 +214,7 @@ def run_bot():
         await int.response.send_message(goal.get_status_message())
 
     # Display help
-    @tree.command(name='help', description='Display help', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='help', description='Display help', guild=discord.Object(id=guild_id))
     async def display_help(int: discord.Interaction):
         log.info(f'Printing help for user {int.user.name}')
         await int.response.send_message(open('./data/help_message.txt', 'r').read(), ephemeral=True)
