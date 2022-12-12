@@ -51,6 +51,10 @@ class Goal:
         # use enumerate to get index
 
         for i, entry in enumerate(self.time_worked):
+
+            # check if entry is size 3, if not, create new entry with N/A
+            entry = entry if len(entry) == 3 else entry + ('N/A',)
+
             hours = entry[1]
             minutes = round((hours - int(hours)) * 60)
             hours = int(hours)
