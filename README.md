@@ -19,5 +19,5 @@ Accountibot is a discord bot Discord bot that will keep track of progress toward
 ### Completed
 ![completed goal](./lib/plot_complete.png)
 
-## Invite this bot to your server
-Invite URL = https://discord.com/api/oauth2/authorize?client_id=1047769932089282590&permissions=536267455568&scope=bot
+### Invite this bot to your server
+[Invite URL](https://discord.com/api/oauth2/authorize?client_id=1047769932089282590&permissions=536267455568&scope=bot)
