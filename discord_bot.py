@@ -97,7 +97,7 @@ def run_bot():
         try:
             user_goal = load_goal(str(author_ID))
             user_goal.generate_plot_image()
-            await int.response.send_message(file=discord.File('data/' + str(author_ID) + '.png'))
+            await int.channel.send(file=discord.File('data/' + str(author_ID) + '.png'))
         except Exception as e:
             log.error("Error loading goal: " + str(e))
             await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
