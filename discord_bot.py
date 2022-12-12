@@ -127,12 +127,18 @@ def run_bot():
         command_args = ctx.message.content.split()
 
         goals = []
-        for filename in os.listdir('./data/goals/'):
-            if filename.endswith('.pickle'):
-                with open('./data/goals/' + filename, 'rb') as f:
-                    goal = pickle.load(f)
-                    goals.append(goal)
-
+        try: 
+            for filename in os.listdir('/home/julien/Programming/Projects/AccountiBot/data/goals'):
+                print(filename)
+                if filename.endswith('.pickle'):
+                    with open('data/goals/' + filename, 'rb') as f:
+                        goal = pickle.load(f)
+                        goals.append(goal)
+        except Exception as e:
+            log.error("Error listing goals: " + str(e))
+            await int.response.send_message("Error listing goals.")
+            return
+            
         if len(goals) == 0:
             await ctx.send("No goals found.")
             return

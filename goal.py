@@ -119,7 +119,7 @@ class Goal:
         mpl.rcParams['xtick.bottom'] = False
         mpl.rcParams['ytick.left'] = False
 
-    def day_remaining(self):
+    def days_remaining(self):
         return (self.end_date - datetime.datetime.utcnow()).days
     
     def create_plot(self):
