@@ -15,12 +15,12 @@ Hello, I'm AccountBot.
 /addtime 90m
 
 **Show graph of your progress:**
-/progress
+/progresschart
 
 **Check status of goal**
 /status
 
 **List all goals of all users**
-/listsevergoals
+/listgoals
 
 /help 

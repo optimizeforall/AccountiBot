@@ -54,44 +54,28 @@ def run_bot():
 
     # Add hours
     @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=1014983443756613672))
-    async def add_time(int: discord.Interaction, time: str):
+    async def add_time(int: discord.Interaction, hours: str, minutes: str):
 
-        author_ID = int.user.id
-
-        # Check if time is formatted correctly: 1h30m, 90m, 1h, 1.5h
-        if not bool(re.match(r"^(\d+(\.\d+)?h)?(\d+(\.\d+)?m)?$", time)):
-            await int.response.send_message("Invalid time format. Example: 1h30m, 90m, 1h, 1.5h")
-            return
-
-        # Convert string 1h30m to hours
-        if 'm' in time and not 'h' in time:
-            hours = float(time.split('m')[0])/60
-        elif 'h' in time and not 'm' in time:
-            hours = float(time.split('h')[0])
-        elif 'h' in time and 'm' in time:
-            hours = float(time.split(
-                'h')[0]) + float(time.split('h')[1].split('m')[0])/60
-        else:
-            await int.response.send_message("Invalid time format. Example: 1h30m, 90m, 1h, 1.5h")
-            return
+        author_ID = int.user.id        
+        time_in_hours = float(hours) + float(minutes)/60
 
         # Load goal from file and add hours
         try:
             goal = load_goal(str(author_ID))
-            goal.add_hours(datetime.datetime.utcnow(), hours)
+            goal.add_hours(datetime.datetime.utcnow(), time_in_hours)
             save_goal(str(author_ID), goal)
         except Exception as e:
             log.error("Error loading goal: " + str(e))
             await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
             return
 
-        message = str(hours) + " hours added to goal: " + \
+        message = str(round(time_in_hours, 2)) + " hours added to goal: " + \
             goal.goal_title + "\n"
         message += goal.get_status_message()
         await int.response.send_message(message)
 
     # Display progress chart
-    @tree.command(name='progress', description='Display progress chart', guild=discord.Object(id=1014983443756613672))
+    @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=1014983443756613672))
     async def display_goal(int: discord.Interaction):
         author_ID = int.user.id
 
