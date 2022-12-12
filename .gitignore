@@ -1,12 +1,3 @@
-# Ignore these
-test.py
+# Ignore these (personal)
 __pycache__
-test_boty.py
-data/*.pickle
-data/*.png
-data/goals/*
-
-# Don't ignore these 
-!data/plot_complete.png
-!data/plot_incomplete.png
-!data/activegoals.pickle
+data_backup
