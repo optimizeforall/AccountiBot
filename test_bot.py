@@ -1,11 +1,12 @@
 
 import datetime
 import pickle
+import random
 import logger as log
 from goal import Goal
 
 
-def testGoal():
+def test_goal():
     goalDuration = 30
     hourGoal = 50
     goalTitle = 'Learn_Rust'

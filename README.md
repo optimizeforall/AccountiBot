@@ -1,46 +1,23 @@
-# AccountiBot 
+# AccountiBot Discord Bot
 
 Accountibot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it.
 
-## Functionality 
+![Accountibot in action](lib/image.png)
 
-**Add new goal**
-!g [goal duration] [hours to work] [goal title] ?[rest days]
+## Functionality
 
-
-*Example:*
-!g 10 30 beast_mode 2
-
-Your goal, beast_mode, will last 10 days, and require 30 hours of recorded work.
-It begins now, and ends Thur October 3rd, 2022 at 11:59 PM.
-This requires an average of 3hrs of work / day with 2 days off.
-If you fall behind in tracking, I'll get on you case. 
-
-If you need help regarding using this bot, type !gh
-
-
-
-**Add hours to goal**
-!ga [goal_title] [time in hours / minutes]
-
-*Examples:*
-!ga beast_mode 1h55m
-!ga beast_mode 3.5h
-!ga beast_mode 23m
-!ga beast_mode 90m
-
-**Show graph of progress**
-!gg [goal title]
-
-## Graphs 
-
-You can ask AccountiBot for current graph of progress and he will post this.
+- **Create goals**
+- **Time track with built-in stop watch**
+- **Add hours manually**
+- **List goals of other members**
+- **Show current status of goal in message**
+- **Show graph of progress**
 
 ### Incompleted
-![incomplete goal](./data/plot_incomplete.png)
+![incomplete goal](./lib/plot_incomplete.png)
 
 ### Completed
-![completed goal](./data/plot_complete.png)
+![completed goal](./lib/plot_complete.png)
 
 ## Invite this bot to your server
 Invite URL = https://discord.com/api/oauth2/authorize?client_id=1047769932089282590&permissions=536267455568&scope=bot

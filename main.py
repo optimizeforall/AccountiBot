@@ -1,6 +1,6 @@
 from logger import log
 import discord_bot
-from testing import testGoal
+from test_bot import test_goal
 
 def main():
     # testGoal()
@@ -9,4 +9,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    testGoal()
+    # test_goal()
