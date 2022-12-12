@@ -1,6 +1,6 @@
-# AccountiBot Discord Bot
+# AccountaBot Discord Bot
 
-Accountibot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it.
+Accountabot is a discord bot Discord bot that will keep track of progress towards goals. Here is an example of how to use it.
 
 ![Accountibot in action](lib/image.png)
 
