@@ -1,18 +1,10 @@
-__pycache__/
-.gitignore
-./data/plot.png
 test.py
-test_bot.py
-*.pickle
-./data/goals/*.pickle
-.replit
-poetry.lock
-pyproject.toml
-replit.nix
-venv/
-
-# ignore all png except ./data/plot_complete.png and ./data/plot_incomplete.png
-./data/goals/*.pickle
-!./data/*.png
-!./data/plot_complete.png
-!./data/plot_incomplete.png
+__pycache__
+test_boty.py
+data/*.pickle
+data/*.png
+data/goals/*
+!data/plot_complete.png
+!data/plot_incomplete.png
+!data/activegoals.pickle
+ 
