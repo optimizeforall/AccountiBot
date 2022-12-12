@@ -6,6 +6,7 @@ data_backup
 data/*.pickle
 data/*.png
 data/goals/*
+data_backup
 
 # Don't ignore these 
 !data/plot_complete.png
