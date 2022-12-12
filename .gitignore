@@ -1,10 +1,12 @@
+# Ignore these
 test.py
 __pycache__
 test_boty.py
 data/*.pickle
 data/*.png
 data/goals/*
+
+# Don't ignore these 
 !data/plot_complete.png
 !data/plot_incomplete.png
 !data/activegoals.pickle
- 

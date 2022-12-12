@@ -1,22 +1,23 @@
 from logger import log
 import pickle
 
+# Load goal object from file usizng pickle
 def load_goal(authorId):
     with open('./data/goals/' + str(authorId) + '.pickle', 'rb') as f:
         log.info('Loading: ' + str(authorId) + '.pickle')
         goal = pickle.load(f)
-        f.close()
     return goal
     
+# Save goal object to file using pickle
 def save_goal(goalTitle, goal):
     try:
         with open('./data/goals/' + goalTitle + '.pickle', 'wb') as f:
             pickle.dump(goal, f)
             log.info('Saved goal: ' + goalTitle + '.pickle')
-            f.close()
     except Exception as e:
         log.error("Error saving goal: " + str(e))
 
+# Determine if user input is formatted correctly
 def valid_format(pm):
     # !g [goal title] [goal duration in days] [hours to work] ?[rest days]
     if pm[0] == "!g":

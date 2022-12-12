@@ -21,32 +21,37 @@ class DiscordBot(commands.Bot):
 def runBot():
     client = DiscordBot(command_prefix='!', intents=discord.Intents.all())
     
-    @client.command(name='g', help='Create goal: !g [goal title] [goal duration in days] [hours to work] ?[rest days]')
+    @client.command(name='Create goal', help='!ga [goal title] [goal duration in days] [hours to work] ?[rest days]')
     async def create_goal(ctx): 
         parsed_message = ctx.message.content.split()
         author_ID = ctx.message.author.id
         author_name = ctx.message.author.name
 
-
+        # If bad format, return
         if not valid_format(parsed_message):
             await ctx.send("Invalid format. Use !g [goal title] [goal duration] [hour goal] [days off]")
             return
-        
+
+        # Create variables from parsed message
         goal_title = parsed_message[1]
         goal_duration = int(parsed_message[2])
         hour_goal = int(parsed_message[3])
         days_off = 0 if len(parsed_message) == 4 else int(parsed_message[4])
 
+        # If days off is greater than goal duration, input invalid, return
         if days_off >= goal_duration:
             await ctx.send("Days off must be less than goal duration.")
             return
 
+        # Crete goal object and save to file with author ID as file name
         goal = Goal(goal_duration, hour_goal, goal_title, days_off=days_off, author_ID=author_ID, author_name=author_name)
         save_goal(str(author_ID), goal)
 
+        # Send user initializtion message
         await ctx.send(goal.get_init_message())
+
     
-    @client.command(name='ga', help='!ga [time in hours / minutes]')
+    @client.command(name='Add hours/minutes', help='!ga [time in hours / minutes]')
     async def add_time(ctx):
         parsed_message = ctx.message.content.split()
         author_ID = ctx.message.author.id
@@ -71,17 +76,16 @@ def runBot():
             goal = load_goal(str(author_ID))
             goal.add_hours(datetime.datetime.utcnow(), hours)
             save_goal(str(author_ID), goal)
-            
-        except Exception as e:  
+        except Exception as e:
             log.error("Error loading goal: " + str(e))
-            await ctx.send("Error loading goal. Make sure you have the correct title.")
+            await ctx.send("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
             return
-        
+            
         await ctx.send(str(hours) + " hours added to goal: " + goal.goal_title)
         await ctx.send(goal.get_status_message())
 
     # Display goal chart: !gg
-    @client.command(name='gg', help='!gg')
+    @client.command(name='Display progress chart', help='!gg')
     async def display_goal(ctx):
         author_ID = ctx.message.author.id
 
@@ -94,7 +98,7 @@ def runBot():
             await ctx.send("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
 
     # Delete goal: !gd [goal title]
-    @client.command(name='gd', help='!gd')
+    @client.command(name='Delete current goal', help='!gd')
     async def delete_goal(ctx):
         parsed_message = ctx.message.content.split()
         author_ID = ctx.message.author.id
@@ -111,7 +115,7 @@ def runBot():
             await ctx.send("Error deleting goal. Make sure you have the correct title.")
 
     # List all goals: !gl
-    @client.command(name='gl', help='!gl')
+    @client.command(name='List all goals on server', help='!gl')
     async def list_goals(ctx):
         parsed_message = ctx.message.content.split()
 
@@ -139,7 +143,7 @@ def runBot():
             await ctx.send(message)
 
     # Start goal timer: !gstart
-    @client.command(name='gstart', help='!gstart')
+    @client.command(name='Start timer', help='!gstart')
     async def start_goal(ctx):
             try:
                 with open('./data/activegoals.pickle', 'rb') as f:
@@ -159,7 +163,7 @@ def runBot():
             await ctx.send("Goal started now. Use!gstop to stop goal.")
 
     # Stop goal timer: !gstop
-    @client.command(name='gstop', help='!gstop')
+    @client.command(name='Stop timer', help='!gstop')
     async def stop_goal(ctx):
             author_ID = ctx.message.author.id
 
@@ -193,7 +197,7 @@ def runBot():
                 await ctx.send("No active goal.")
 
     # Display active goals status: !gs
-    @client.command(name='gs', help='!gs')
+    @client.command(name='Display current goal status', help='!gs')
     async def display_active_goals(ctx):
         parsed_message = ctx.message.content.split()
         
@@ -207,7 +211,7 @@ def runBot():
         await ctx.send(goal.get_status_message())
 
     # Display help: !gh
-    @client.command(name='gh', help='!gh')
+    @client.command(name='Help', help='!gh, !help')
     async def display_help(ctx):
         parsed_message = ctx.message.content.split()
 
