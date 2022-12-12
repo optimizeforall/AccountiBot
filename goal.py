@@ -144,6 +144,7 @@ class Goal:
         return (self.end_date - datetime.datetime.utcnow()).days
     
     def create_plot(self):
+        log.info(f'Attempting to generate plot for {self.goal_title}')
         self.initialize_plot()
  
         # Curate x and y values
@@ -161,16 +162,12 @@ class Goal:
         # Scale x axis to be in days
         x = [((i - self.start_date.timestamp()) / (60*60*24)) for i in x]
 
-        print('x: ', x)
-        print('y: ', y)
-
         # If largest y value is greater than goal, set y axis to largest y value
         if y[-1] > self.hour_goal: 
             axis.set_ylim([0, y[-1]*1.1])
         else:
             axis.set_ylim([0, round(self.hour_goal * 1.1)])
 
-        log.info(f'Generating plot for {self.goal_title}')
 
         # Create figure
         plt.title(f'\'{self.goal_title}\' Progress Chart ({self.author_name})', pad=10)

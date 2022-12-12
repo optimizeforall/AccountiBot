@@ -16,7 +16,7 @@ def run_bot():
             self.synced = False
 
         async def on_ready(self):
-            print(f'{self.user} has connected to Discord!')
+            log.info(f'{self.user} has connected to Discord!')
             if not self.synced:
                 await tree.sync(guild=discord.Object(id=1014983443756613672))
                 # self.synced = True
@@ -50,13 +50,14 @@ def run_bot():
         save_goal(str(author_ID), goal)
 
         # Send user initializtion message
+        log.info("New goal created: " + goal_title)
         await int.response.send_message(goal.get_init_message())
 
     # Add hours
     @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=1014983443756613672))
     async def add_time(int: discord.Interaction, hours: str, minutes: str, comment: str = None):
 
-        author_ID = int.user.id        
+        author_ID = int.user.id
         time_in_hours = float(hours) + float(minutes)/60
 
         # Load goal from file and add hours
@@ -72,14 +73,14 @@ def run_bot():
         message = str(round(time_in_hours, 2)) + " hours added to goal: " + \
             goal.goal_title + "\n"
         message += goal.get_status_message()
+
+        log.info(f'{time_in_hours}hrs added to goal: {goal.goal_title}')
         await int.response.send_message(message)
-    
-    # Display log of hours worked on goal 
+
+    # Display log of hours worked on goal
     @tree.command(name='log', description='Display log of hours worked on goal', guild=discord.Object(id=1014983443756613672))
     async def display_log(int: discord.Interaction):
         author_ID = int.user.id
-
-        
 
         try:
             goal = load_goal(str(author_ID))
@@ -88,15 +89,16 @@ def run_bot():
             log.error("Error loading goal: " + str(e))
             await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
 
-
     # Display progress chart
+
     @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=1014983443756613672))
     async def display_goal(int: discord.Interaction):
         author_ID = int.user.id
 
         try:
-            user_goal = load_goal(str(author_ID))
-            user_goal.generate_plot_image()
+            goal = load_goal(str(author_ID))
+            goal.generate_plot_image()
+            log.info("Goal chart generated: " + goal.goal_title)
             await int.channel.send(file=discord.File('data/' + str(author_ID) + '.png'))
         except Exception as e:
             log.error("Error loading goal: " + str(e))
@@ -109,7 +111,8 @@ def run_bot():
 
         try:
             os.remove('data/goals/' + str(author_ID) + '.pickle')
-            await int.response.send_message("Goal deleted.")
+            log.info("Goal deleted: " + str(author_ID) + '.pickle')
+            await int.response.send_message('Goal deleted.')
             return
         except Exception as e:
             log.error("Error deleting goal: " + str(e))
@@ -119,9 +122,8 @@ def run_bot():
     @tree.command(name='listgoals', description='List all active goals', guild=discord.Object(id=1014983443756613672))
     async def list_goals(int: discord.Interaction):
         goals = []
-        try: 
-            for filename in os.listdir('/home/julien/Programming/Projects/AccountiBot/data/goals'):
-                print(filename)
+        try:
+            for filename in os.listdir('/homez/julien/Programming/Projects/AccountiBot/data/goals'):
                 if filename.endswith('.pickle'):
                     with open('data/goals/' + filename, 'rb') as f:
                         goal = pickle.load(f)
@@ -130,7 +132,7 @@ def run_bot():
             log.error("Error listing goals: " + str(e))
             await int.response.send_message("Error listing goals.")
             return
-            
+
         if len(goals) == 0:
             await int.response.send_message("No goals found.")
             return
@@ -160,6 +162,7 @@ def run_bot():
         with open('./data/activegoals.pickle', 'wb') as f:
             pickle.dump(activeGoals, f)
 
+        log.info(f'Starting goal for user: {int.user.name}')
         await int.response.send_message("Goal started now. Use /gstop to stop goal.")
 
     # Stop goal timer:
@@ -176,12 +179,11 @@ def run_bot():
             return
 
         if str(author_ID) in active_goals:
-            hoursWorked = (datetime.datetime.utcnow(
-            ) - active_goals[str(author_ID)]).total_seconds() / (60 * 60)
+            hour_worked = (datetime.datetime.utcnow() - active_goals[str(author_ID)]).total_seconds() / (60 * 60)
 
             try:
                 goal = load_goal(str(author_ID))
-                goal.add_hours(datetime.datetime.utcnow(), hoursWorked, comment)
+                goal.add_hours(datetime.datetime.utcnow(), hour_worked, comment)
                 save_goal(str(author_ID), goal)
             except Exception as e:
                 log.error("Error loading goal: " + str(e))
@@ -189,11 +191,12 @@ def run_bot():
                 return
 
             del active_goals[str(author_ID)]
-            message = f"Goal stopped. {round(hoursWorked, 2)} hours added to goal: {goal.goal_title}\n"
+            message = f"Goal stopped. {round(hour_worked, 2)} hours added to goal: {goal.goal_title}\n"
             message += goal.get_status_message()
             await int.response.send_message(message)
+            log.info(f'Goal stopped for user {int.user.name}, hours worked = {round(hour_worked, 2)} hours.')
             return
-        else:
+        else:   
             await int.response.send_message("No active goal.")
 
     # Display active goals status
@@ -206,11 +209,13 @@ def run_bot():
             await int.response.send_message("Error loading goal. Make sure you have active goal.")
             return
 
+        log.info(f'Printing status for user {int.user.name}')
         await int.response.send_message(goal.get_status_message())
 
     # Display help
     @tree.command(name='help', description='Display help', guild=discord.Object(id=1014983443756613672))
     async def display_help(int: discord.Interaction):
+        log.info(f'Printing help for user {int.user.name}')
         await int.response.send_message(open('./data/help_message.txt', 'r').read(), ephemeral=True)
 
     client.run(str(os.environ['AccountiBotToken']))
