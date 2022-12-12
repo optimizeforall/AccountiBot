@@ -4,7 +4,7 @@ from testing import testGoal
 
 def main():
     # testGoal()
-    discord_bot.runBot()
+    discord_bot.run_bot()
     
 
 if __name__ == '__main__':

@@ -20,7 +20,6 @@ def testGoal():
     try:
         with open(goalTitle + '.pickle', 'wb') as f:
             pickle.dump(goal, f)
-            f.close()
     except Exception as e:
         log.error("Error saving goal: " + str(e))
 
