@@ -5,7 +5,8 @@ test_boty.py
 data_backup
 data/*.pickle
 data/*.png
-data/goals/*
+data/goals/*.pickle
+data/goals/*.png
 data/*.png
 data_backup
 
