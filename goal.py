@@ -16,13 +16,13 @@ class Goal:
         self.end_date = self.start_date + datetime.timedelta(days=goal_duration)
         self.days_off = days_off
         self.hours_per_day = hour_goal / (goal_duration - self.days_off)
-        self.time_worked = [] # list of touples (time of entry, hoursWorked)
+        self.time_worked = [] # list of touples (time_of_entry, hours_worked, commit_message)
         self.succeeded = False
         self.total_hours_worked = 0
         self.author_ID = author_ID
         self.author_name = author_name
 
-    def add_hours(self, time: datetime, hours: float):
+    def add_hours(self, time: datetime, hours: float, commit_message=None):
         day_in_goal = (time - self.start_date).days
         start_date_str = self.start_date.strftime('%m/%d/%Y, %H:%M:%S')
         end_date_str = self.end_date.strftime('%m/%d/%Y, %H:%M:%S')
@@ -34,13 +34,25 @@ class Goal:
             return
         else:
             log.info(f'Adding {hours} hours for day {day_in_goal} / {self.goal_duration} for {self.goal_title}.')
-            self.time_worked.append((time, hours)) # This isn't necessary, but I want to keep track of all entries for now
+            self.time_worked.append((time, hours, commit_message)) # This isn't necessary, but I want to keep track of all entries for now
             self.total_hours_worked += hours
             # Determine if goal is complete
             if self.succeeded == False and self.total_hours_worked >= self.hour_goal:
                 log.debug(f'Goal completed! Total hours worked: {self.total_hours_worked}')
                 self.succeeded = True
                 log.info(f'Goal {self.goal_title} succeeded!')
+    def list_time_entries(self):
+        message = f'Here are all the time entries for {self.goal_title}:\n'
+
+        hours = entry[1]
+        minutes = round((hours - int(hours)) * 60)
+        hours = int(hours)
+
+
+        for entry in self.time_worked:
+            message += f'{entry[0].strftime("%m/%d/%Y, %H:%M:%S")} - {hours}:{minutes:02d} - {entry[2]}\n'
+        return message
+
 
     def get_status_message(self):
         """
@@ -77,7 +89,6 @@ class Goal:
     def show_plot(self):
         self.create_plot()
         plt.show()
-
 
     # returns png image of plot
     def generate_plot_image(self):
