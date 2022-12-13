@@ -124,7 +124,7 @@ def run_bot():
     async def list_goals(int: discord.Interaction):
         goals = []
         try:
-            for filename in os.listdir('/homez/julien/Programming/Projects/AccountiBot/data/goals'):
+            for filename in os.listdir('data/goals'):
                 if filename.endswith('.pickle'):
                     with open('data/goals/' + filename, 'rb') as f:
                         goal = pickle.load(f)
