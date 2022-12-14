@@ -1,10 +1,10 @@
 # Ignore these (personal)
 __pycache__
-# data/*.pickle
-# data/*.png
-# data/goals/*.pickle
-# data/goals/*.png
+data/*.pickle
+data/*.png
+data/goals/*.pickle
+data/goals/*.png
 
 # Don't ignore these 
-# !data/plot_complete.png
-# !data/plot_incomplete.png
+!data/plot_complete.png
+!data/plot_incomplete.png
