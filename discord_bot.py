@@ -7,6 +7,7 @@ import os
 from goal import Goal
 from logger import log
 from utils import *
+import sqlite3
 
 
 def run_bot():
@@ -149,24 +150,29 @@ def run_bot():
 
     # Start goal timer
     @tree.command(name='start', description='Start goal timer', guild=discord.Object(id=guild_id))
-    async def start_goal(int: discord.Interaction):
+    async def start_goal(int: discord.Interaction, intention: str = None):
         
-        # check if activegoal file exists
+        # if active_goal doesn't exists, create empty dictionary
+        # else, load active_goal from file
         if not os.path.exists('./data/activegoals.pickle'):
-            activeGoals = {}
+            active_goals = {}
         else:
             try:
                 with open('./data/activegoals.pickle', 'rb') as f:
-                    activeGoals = pickle.load(f)
+                    active_goals = pickle.load(f)
             except Exception as e:
                 log.error("Error loading active goals: " + str(e))
                 await int.response.send_message("Error loading active goals.")
 
-        activeGoals[str(int.user.id)] = datetime.datetime.utcnow()
 
+        # save active goal to dictionary with current time and intention
+        active_goals[str(int.user.id)] = (datetime.datetime.utcnow(), intention)
+
+
+    
         # save active goal to file using pickle
         with open('./data/activegoals.pickle', 'wb') as f:
-            pickle.dump(activeGoals, f)
+            pickle.dump(active_goals, f)
 
         log.info(f'Starting goal for user: {int.user.name}')
         await int.response.send_message("Goal started now. Use /gstop to stop goal.")
@@ -181,15 +187,16 @@ def run_bot():
                 active_goals = pickle.load(f)
         except Exception as e:
             log.error("Error loading active goals: " + str(e))
-            await int.response.send_message("Error loading active goals.")
+            await int.response.send_message("Error. Check that you started the goal with /gstart.")
             return
 
         if str(author_ID) in active_goals:
-            hour_worked = (datetime.datetime.utcnow() - active_goals[str(author_ID)]).total_seconds() / (60 * 60)
+            hour_worked = (datetime.datetime.utcnow() - active_goals[str(author_ID)][0]).total_seconds() / (60 * 60)
+            intention = active_goals[str(author_ID)][1]
 
             try:
                 goal = load_goal(str(author_ID))
-                goal.add_hours(datetime.datetime.utcnow(), hour_worked, comment)
+                goal.add_hours(datetime.datetime.utcnow(), hour_worked, comment, intention)
                 save_goal(str(author_ID), goal)
             except Exception as e:
                 log.error("Error loading goal: " + str(e))

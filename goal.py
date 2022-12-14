@@ -16,25 +16,26 @@ class Goal:
         self.end_date = self.start_date + datetime.timedelta(days=goal_duration)
         self.days_off = days_off
         self.hours_per_day = hour_goal / (goal_duration - self.days_off)
-        self.time_worked = [] # list of touples (time_of_entry, hours_worked, commit_message)
+        self.time_entries = [] # list of touples (time_of_entry, hours_worked, commit_message, intention)
         self.succeeded = False
         self.total_hours_worked = 0
         self.author_ID = author_ID
         self.author_name = author_name
 
-    def add_hours(self, time: datetime, hours: float, commit_message=None):
+    def add_hours(self, time: datetime, hours: float, chunk_comment=None, chunk_intention=None):
         day_in_goal = (time - self.start_date).days
         start_date_str = self.start_date.strftime('%m/%d/%Y, %H:%M:%S')
         end_date_str = self.end_date.strftime('%m/%d/%Y, %H:%M:%S')
         entry_date_str = time.strftime('%m/%d/%Y, %H:%M:%S')
 
-        # If dayInGoal outside goal range, print error and return
+        # if day_in_goal is outside of goal range, print error and return
+        # else, add hours to total_hours_worked
         if day_in_goal >= self.goal_duration or day_in_goal < 0:
             log.error(f'{entry_date_str} is outside of goal range: ({start_date_str}) - ({end_date_str})')
             return
         else:
             log.info(f'Adding {hours} hours for day {day_in_goal} / {self.goal_duration} for {self.goal_title}.')
-            self.time_worked.append((time, hours, commit_message)) # This isn't necessary, but I want to keep track of all entries for now
+            self.time_entries.append((time, hours, chunk_comment, chunk_intention)) # This isn't necessary, but I want to keep track of all entries for now
             self.total_hours_worked += hours
             # Determine if goal is complete
             if self.succeeded == False and self.total_hours_worked >= self.hour_goal:
@@ -46,22 +47,28 @@ class Goal:
     def get_log(self):
         message = f'Here are all the time entries for {self.goal_title}:\n'
 
-        # determine users timezone
+        # use enumerate to get index of entry
+        for i, entry in enumerate(self.time_entries):
+            
 
-        # use enumerate to get index
-
-        for i, entry in enumerate(self.time_worked):
-
-            # check if entry is size 3, if not, create new entry with N/A
-            entry = entry if len(entry) == 3 else entry + ('N/A',)
+            # this allows for backwards compatibility with old entries
+            # mainly for personal use
+            # TODO: backwards comp can be removed after release
+            if len(entry) == 2:
+                entry = entry + ('',)
+            elif len(entry) == 3:
+                entry = entry + ('',)
 
             hours = entry[1]
             minutes = round((hours - int(hours)) * 60)
             hours = int(hours)
-            log_message = entry[2] if entry[2] else 'N/A'
+            
+            # Display log message if it exists
+            log_message = entry[2] if entry[2] != None else ''
+            intention = f'(Intention: {entry[3]})' if entry[3] != None else ''
 
-            message += f' {i+1}. {hours}:{minutes:02d} - {log_message}\n'
-        return message;
+            message += f' {i+1}. {hours}:{minutes:02d} - {log_message} {intention}\n'
+        return message
 
 
     def get_status_message(self):
@@ -148,8 +155,8 @@ class Goal:
         self.initialize_plot()
  
         # Curate x and y values
-        x = [i[0].timestamp() for i in self.time_worked]
-        y = [i[1] for i in self.time_worked] # create list of hours worked for each entry
+        x = [i[0].timestamp() for i in self.time_entries]
+        y = [i[1] for i in self.time_entries] # create list of hours worked for each entry
         # Sort x and y values by x values
         x, y = zip(*sorted(zip(x, y)))
         # sum of each index up to current index 
