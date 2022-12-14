@@ -150,12 +150,17 @@ def run_bot():
     # Start goal timer
     @tree.command(name='start', description='Start goal timer', guild=discord.Object(id=guild_id))
     async def start_goal(int: discord.Interaction):
-        try:
-            with open('./data/activegoals.pickle', 'rb') as f:
-                activeGoals = pickle.load(f)
-        except Exception as e:
-            log.error("Error loading active goals: " + str(e))
-            await int.response.send_message("Error loading active goals.")
+        
+        # check if activegoal file exists
+        if not os.path.exists('./data/activegoals.pickle'):
+            activeGoals = {}
+        else:
+            try:
+                with open('./data/activegoals.pickle', 'rb') as f:
+                    activeGoals = pickle.load(f)
+            except Exception as e:
+                log.error("Error loading active goals: " + str(e))
+                await int.response.send_message("Error loading active goals.")
 
         activeGoals[str(int.user.id)] = datetime.datetime.utcnow()
 
