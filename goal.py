@@ -5,6 +5,7 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import logging
+from utils import *
 
 class Goal:
     def __init__(self, goal_duration, hour_goal: float, goal_title: str, days_off=0, author_ID=None, author_name=None):
@@ -49,25 +50,15 @@ class Goal:
 
         # use enumerate to get index of entry
         for i, entry in enumerate(self.time_worked):
-            
-
-            # this allows for backwards compatibility with old entries
-            # mainly for personal use
-            # TODO: backwards comp can be removed after release
-            if len(entry) == 2:
-                entry = entry + ('',)
-            elif len(entry) == 3:
-                entry = entry + ('',)
-
             hours = entry[1]
             minutes = round((hours - int(hours)) * 60)
             hours = int(hours)
             
             # Display log message if it exists
-            log_message = entry[2] if entry[2] != None else ''
+            log_message = f'- {entry[2]}'  if entry[2] != None else ''
             intention = f'(Intention: {entry[3]})' if entry[3] != None else ''
 
-            message += f' {i+1}. {hours}:{minutes:02d} - {log_message} {intention}\n'
+            message += f' {i+1}. {hours}:{minutes:02d} {log_message} {intention}\n'
         return message
 
 
