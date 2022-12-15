@@ -168,7 +168,7 @@ class Goal:
 
 
         # Create figure
-        plt.title(f'\'{self.goal_title}\' Progress Chart ({self.author_name})', pad=10)
+        plt.title(f'{self.goal_title} Progress Chart ({self.author_name})', pad=10)
         plt.xlabel('Days')
         plt.ylabel('Hours')
         plt.gcf().set_size_inches(15, 10)
