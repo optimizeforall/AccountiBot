@@ -55,6 +55,31 @@ def run_bot():
         log.info("New goal created: " + goal_title)
         await int.response.send_message(goal.get_init_message())
 
+
+    # Update goal
+    @tree.command(name='updategoal', description='Update goal', guild=discord.Object(id=guild_id))
+    async def update_goal(int: discord.Interaction, goal_title: str=None, goal_days: int=None, goal_hours: int = None, days_off: int = None):
+        author_ID = int.user.id
+        try:
+            goal = load_goal(str(author_ID))
+            if goal_title:
+                goal.goal_title = goal_title
+            if goal_days:
+                goal.goal_days = goal_days
+            if goal_hours:
+                goal.goal_hours = goal_hours
+            if days_off:
+                goal.days_off = days_off
+            save_goal(str(author_ID), goal)
+        except Exception as e:
+            log.error("Error loading goal: " + str(e))
+            await int.response.send_message("Error loading goal.")
+            return
+
+        log.info("Goal updated: " + goal_title)
+        await int.response.send_message("Goal updated.\n\n" + goal.get_init_message())
+
+
     # Rename goal title
     @tree.command(name='rename', description='Rename goal', guild=discord.Object(id=guild_id))
     async def rename_goal(int: discord.Interaction, new_title: str):
@@ -109,7 +134,6 @@ def run_bot():
             await int.response.send_message("Error loading goal. Make sure you have the correct title. And have added at least one entry.")
 
     # Display progress chart
-
     @tree.command(name='progresschart', description='Display progress chart', guild=discord.Object(id=guild_id))
     async def display_goal(int: discord.Interaction):
         author_ID = int.user.id
