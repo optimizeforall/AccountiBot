@@ -71,7 +71,6 @@ class Goal:
 
         message = f'Your goal, *{self.goal_title}*, is **{round(self.total_hours_worked / self.hour_goal * 100, 2)}%** complete. You\'ve totaled **{round(self.total_hours_worked, 2)}hrs**, with **{round(self.hour_goal - self.total_hours_worked, 2)}hrs** remaining.\n'
         message += f'You have **{self.goal_duration - (datetime.datetime.utcnow() - self.start_date).days} days** left to complete this goal with {self.days_off} days off.\n'
-        print(self.total_hours_worked, self.hour_goal, self.goal_duration, self.days_off)
         message += f'You must work **{round((self.hour_goal - self.total_hours_worked) / (self.end_date - datetime.datetime.utcnow()).days, 2)} hours per day** to complete this goal on time.\n'
 
         return message
