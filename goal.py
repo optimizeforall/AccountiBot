@@ -5,10 +5,9 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from utils import *
-from plot import *
+import plot
 
-
-class Goal:
+class Goal(plot.Plot):
     def __init__(self, goal_duration, hour_goal: float, goal_title: str, days_off=0, author_ID=None, author_name=None):
         log.info(f'Creating new goal: {goal_title}')
         self.goal_duration = goal_duration
