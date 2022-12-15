@@ -58,16 +58,17 @@ def run_bot():
 
     # Update goal
     @tree.command(name='updategoal', description='Update goal', guild=discord.Object(id=guild_id))
-    async def update_goal(int: discord.Interaction, goal_title: str=None, goal_days: int=None, goal_hours: int = None, days_off: int = None):
+    async def update_goal(int: discord.Interaction, goal_title: str=None, goal_duration: int=None, hour_goal: int = None, days_off: int = None):
         author_ID = int.user.id
         try:
             goal = load_goal(str(author_ID))
             if goal_title:
                 goal.goal_title = goal_title
-            if goal_days:
-                goal.goal_days = goal_days
-            if goal_hours:
-                goal.goal_hours = goal_hours
+            if goal_duration:
+                goal.goal_duration = goal_duration
+                goal.end_date = goal.start_date + datetime.timedelta(days=goal_duration)
+            if hour_goal:
+                goal.hour_goal = hour_goal
             if days_off:
                 goal.days_off = days_off
             save_goal(str(author_ID), goal)
@@ -76,26 +77,8 @@ def run_bot():
             await int.response.send_message("Error loading goal.")
             return
 
-        log.info("Goal updated: " + goal_title)
+        log.info("Goal updated: " + goal.goal_title)
         await int.response.send_message("Goal updated.\n\n" + goal.get_init_message())
-
-
-    # Rename goal title
-    @tree.command(name='rename', description='Rename goal', guild=discord.Object(id=guild_id))
-    async def rename_goal(int: discord.Interaction, new_title: str):
-        author_ID = int.user.id
-        try:
-            goal = load_goal(str(author_ID))
-            goal.goal_title = new_title
-            save_goal(str(author_ID), goal)
-        except Exception as e:
-            log.error("Error loading goal: " + str(e))
-            await int.response.send_message("Error loading goal.")
-            return
-
-        log.info("Goal renamed: " + new_title)
-        await int.response.send_message("Goal renamed to: " + new_title)
-
 
     # Add hours
     @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=guild_id))
@@ -191,7 +174,7 @@ def run_bot():
 
     # Start goal timer
     @tree.command(name='start', description='Start goal timer', guild=discord.Object(id=guild_id))
-    async def start_goal(int: discord.Interaction, intention: str = None):
+    async def start_goal(int: discord.Interaction, intention: str):
         
         # if active_goal doesn't exists, create empty dictionary
         # else, load active_goal from file
@@ -220,7 +203,7 @@ def run_bot():
 
     # Stop goal timer:
     @tree.command(name='stop', description='Stop goal timer', guild=discord.Object(id=guild_id))
-    async def stop_goal(int: discord.Interaction, comment: str = None):
+    async def stop_goal(int: discord.Interaction, comment: str):
         author_ID = int.user.id
 
         try:
