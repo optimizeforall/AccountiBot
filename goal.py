@@ -70,7 +70,7 @@ class Goal(plot.Plot):
         """
 
         days_worked = ((datetime.datetime.utcnow() - self.start_date).total_seconds() / (60*60*24)) - self.days_off
-        days_left = self.goal_duration - (days_worked) - self.days_off # 86400 seconds in a day
+        days_left = round(self.goal_duration - (days_worked) - self.days_off, 2) # 86400 seconds in a day
         hours_per_day = round((self.hour_goal - self.total_hours_worked) / days_left, 2)
         percent_complete = round(self.total_hours_worked / self.hour_goal * 100, 2)
         hours_left = round(self.hour_goal - self.total_hours_worked, 2)
