@@ -55,6 +55,23 @@ def run_bot():
         log.info("New goal created: " + goal_title)
         await int.response.send_message(goal.get_init_message())
 
+    # Rename goal title
+    @tree.command(name='rename', description='Rename goal', guild=discord.Object(id=guild_id))
+    async def rename_goal(int: discord.Interaction, new_title: str):
+        author_ID = int.user.id
+        try:
+            goal = load_goal(str(author_ID))
+            goal.goal_title = new_title
+            save_goal(str(author_ID), goal)
+        except Exception as e:
+            log.error("Error loading goal: " + str(e))
+            await int.response.send_message("Error loading goal.")
+            return
+
+        log.info("Goal renamed: " + new_title)
+        await int.response.send_message("Goal renamed to: " + new_title)
+
+
     # Add hours
     @tree.command(name='addtime', description='Add hours to goal: 1h30, 90m, 1.5h', guild=discord.Object(id=guild_id))
     async def add_time(int: discord.Interaction, hours: str, minutes: str, comment: str = None):
